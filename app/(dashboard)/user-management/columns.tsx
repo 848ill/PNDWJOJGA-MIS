@@ -89,7 +89,6 @@ export const getColumns = (roles: Role[]): ColumnDef<UserRow>[] => [
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
-                                    className="bg-red-600 text-white hover:bg-red-700"
                                     onClick={async () => {
                                         toast.promise(deleteUser(user.id), {
                                             loading: 'Deleting user...',
@@ -100,6 +99,7 @@ export const getColumns = (roles: Role[]): ColumnDef<UserRow>[] => [
                                             error: (err) => err.message,
                                         });
                                     }}
+                                    style={{ backgroundColor: 'hsl(var(--destructive))', color: 'hsl(var(--destructive-foreground))' }}
                                 >
                                     Continue
                                 </AlertDialogAction>

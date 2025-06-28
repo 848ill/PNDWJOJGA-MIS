@@ -15,7 +15,7 @@ import {
 import { useFormStatus, useFormState } from 'react-dom';
 import { addUser } from './actions';
 import { toast } from 'sonner';
-import { type Role } from './page';
+import { type Role } from '@/lib/types/common';
 import {
     Dialog,
     DialogContent,
@@ -39,7 +39,12 @@ export function AddUserFormDialog({ roles }: AddUserFormDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-black text-white hover:bg-black/90">Add New User</Button>
+                <Button 
+                  variant="default" 
+                  style={{ backgroundColor: 'black', color: 'white' }}
+                >
+                  Add New User
+                </Button>
             </DialogTrigger>
             <DialogContent className="bg-white">
                 <DialogHeader>
@@ -65,7 +70,8 @@ function SubmitButton() {
         <Button
             type="submit"
             disabled={pending}
-            className="w-full bg-black text-white hover:bg-black/90"
+            className="w-full"
+            style={{ backgroundColor: 'black', color: 'white' }}
         >
             {pending ? 'Adding User...' : 'Add User'}
         </Button>
@@ -149,7 +155,7 @@ export function AddUserForm({ roles, onUserAdded }: AddUserFormProps) {
                             >
                                 {roles.map((role) => (
                                     <SelectItem key={role.id} value={role.id}>
-                                        {role.name.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}
+                                        {role.name.replace(/_/g, ' ').replace(/\b\w/g, (char: string) => char.toUpperCase())}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

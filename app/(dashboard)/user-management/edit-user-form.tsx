@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { updateUser } from './actions';
-import { type Role } from './page';
+import { type Role } from '@/lib/types/common';
 import { type UserRow } from '@/components/dashboard/UserTable';
 
 interface EditUserFormProps {
@@ -73,7 +73,7 @@ export function EditUserForm({ user, roles, setOpen, onSuccess }: EditUserFormPr
                         <SelectContent className="bg-white">
                             {roles.map((role) => (
                                 <SelectItem key={role.id} value={role.id}>
-                                    {role.name.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}
+                                    {role.name.replace(/_/g, ' ').replace(/\b\w/g, (char: string) => char.toUpperCase())}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -83,7 +83,8 @@ export function EditUserForm({ user, roles, setOpen, onSuccess }: EditUserFormPr
             <div className="pt-4">
                 <Button
                     type="submit"
-                    className="w-full bg-black text-white hover:bg-black/90"
+                    className="w-full"
+                    style={{ backgroundColor: 'black', color: 'white' }}
                 >
                     Save changes
                 </Button>

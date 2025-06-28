@@ -119,11 +119,11 @@ export const columns: ColumnDef<ComplaintRow>[] = [
 interface ComplaintsTableProps {
     data: ComplaintRow[];
     pageCount: number;
-    pagination: PaginationState;
-    setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
+    // pagination: PaginationState;
+    // setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
 }
 
-export function ComplaintsTable({ data, pageCount, pagination, setPagination }: ComplaintsTableProps) {
+export function ComplaintsTable({ data, pageCount }: ComplaintsTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -138,19 +138,16 @@ export function ComplaintsTable({ data, pageCount, pagination, setPagination }: 
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(), // Re-added this as it's needed for internal pagination state even if manual
+    getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    // Configure manual pagination
-    manualPagination: true,
+    manualPagination: false,
     pageCount: pageCount,
-    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination,
     },
   });
 
