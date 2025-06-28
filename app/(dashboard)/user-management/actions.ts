@@ -1,11 +1,11 @@
 // app/(dashboard)/user-management/actions.ts
 'use server';
 
-import { createAdminSupabaseClient } from '@/lib/supabase/server';
+import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { UserRow } from '@/components/dashboard/UserTable'; // Import UserRow type
-import { Role } from './page'; // Import Role type
+import { type Role } from '@/lib/types/common';
 
 // Shared State type for form responses (from previous, for forms)
 export type State = {
@@ -20,8 +20,68 @@ export type State = {
 }
 
 // --- ADD USER SERVER ACTION (from previous) ---
-const AddUserSchema = z.object({ /* ... */ });
-export async function addUser(prevState: State | undefined, formData: FormData): Promise<State> { /* ... */ }
+const AddUserSchema = z.object({
+  fullName: z.string().min(3, 'Full name must be at least 3 characters.'),
+  email: z.string().email('Invalid email address.'),
+  password: z.string().min(8, 'Password must be at least 8 characters.'),
+  roleId: z.string().uuid('A role must be selected.'),
+});
+
+export async function addUser(prevState: State, formData: FormData): Promise<State> {
+  const validatedFields = AddUserSchema.safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      message: 'Invalid form data. Please check the fields.',
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  const { fullName, email, password, roleId } = validatedFields.data;
+  const supabase = createAdminSupabaseClient();
+  
+  try {
+    // 1. Create user in Supabase Auth
+    const { data: { user }, error: authError } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    });
+
+    if (authError) {
+      // Check for specific, common errors
+      if (authError.message.includes('already exists')) {
+        return { success: false, message: 'A user with this email already exists.' };
+      }
+      throw new Error(`Auth Error: ${authError.message}`);
+    }
+    if (!user) {
+      throw new Error('User not created in Supabase Auth.');
+    }
+
+    // 2. Insert user profile into public.users table
+    const { error: insertError } = await supabase.from('users').insert({
+      id: user.id,
+      full_name: fullName,
+      email,
+      role_id: roleId,
+    });
+
+    if (insertError) {
+      // If profile insert fails, we must delete the auth user to prevent orphans.
+      await supabase.auth.admin.deleteUser(user.id);
+      throw new Error(`Profile Insert Error: ${insertError.message}`);
+    }
+
+    revalidatePath('/user-management');
+    return { success: true, message: 'User created successfully!' };
+
+  } catch (e: any) {
+    console.error('Server Action Error (addUser):', e);
+    return { success: false, message: e.message || 'An unexpected server error occurred.' };
+  }
+}
 
 // --- NEW: FETCH USERS SERVER ACTION ---
 export async function fetchUsers(
@@ -76,10 +136,54 @@ export async function fetchUsers(
   }
 }
 
-// --- UPDATE & DELETE ACTIONS (from previous) ---
-export async function updateUser(prevState: State | undefined, formData: FormData): Promise<State> {
-    return { success: false, message: 'Update user not yet implemented.' };
+// --- UPDATE USER SERVER ACTION ---
+const EditUserSchema = z.object({
+  fullName: z.string().min(3, 'Full name must be at least 3 characters.'),
+  roleId: z.string().uuid('Invalid role selected.'),
+});
+
+export async function updateUser(userId: string, formData: FormData): Promise<State> {
+  const validatedFields = EditUserSchema.safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      message: 'Invalid form data. Please check inputs.',
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+  
+  const { fullName, roleId } = validatedFields.data;
+  const supabase = createAdminSupabaseClient();
+
+  try {
+    const { error } = await supabase
+      .from('users')
+      .update({ full_name: fullName, role_id: roleId })
+      .eq('id', userId);
+
+    if (error) {
+        return { success: false, message: error.message };
+    }
+
+    revalidatePath('/user-management');
+    return { success: true, message: 'User updated successfully.' };
+
+  } catch (e: any) {
+    console.error('Server Action Error (updateUser):', e);
+    return { success: false, message: e.message || 'An unexpected error occurred.' };
+  }
 }
-export async function deleteUser(prevState: State | undefined, formData: FormData): Promise<State> {
-    return { success: false, message: 'Delete user not yet implemented.' };
+
+// --- UPDATE & DELETE ACTIONS (from previous) ---
+export async function deleteUser(userId: string) {
+    const supabase = createAdminSupabaseClient();
+    const { error } = await supabase.from('users').delete().eq('id', userId);
+
+    if (error) {
+        return { success: false, message: `Failed to delete user: ${error.message}` };
+    }
+
+    revalidatePath('/user-management');
+    return { success: true, message: 'User deleted successfully.' };
 }
