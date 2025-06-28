@@ -32,6 +32,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { buttonVariants } from '@/components/ui/button';
 
 import { deleteUser } from './actions';
 import { type Role, type UserRow } from '@/lib/types/common';
@@ -88,6 +89,7 @@ export const getColumns = (roles: Role[]): ColumnDef<UserRow>[] => [
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
+                                    className="bg-red-600 text-white hover:bg-red-700"
                                     onClick={async () => {
                                         toast.promise(deleteUser(user.id), {
                                             loading: 'Deleting user...',
@@ -107,12 +109,15 @@ export const getColumns = (roles: Role[]): ColumnDef<UserRow>[] => [
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
+                            <Button
+                                variant="ghost"
+                                className="h-8 w-8 p-0 transition-all hover:scale-110 active:scale-95"
+                            >
                                 <span className="sr-only">Open menu</span>
                                 <DotsHorizontalIcon className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className="bg-white">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => setEditOpen(true)}>
                                 Edit

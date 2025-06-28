@@ -80,8 +80,13 @@ export function EditUserForm({ user, roles, setOpen, onSuccess }: EditUserFormPr
                     </Select>
                 </div>
             </div>
-            <div className="flex justify-end pt-4">
-                <Button type="submit">Save changes</Button>
+            <div className="pt-4">
+                <Button
+                    type="submit"
+                    className="w-full bg-black text-white hover:bg-black/90"
+                >
+                    Save changes
+                </Button>
             </div>
         </form>
     );

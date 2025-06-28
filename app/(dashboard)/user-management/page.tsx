@@ -1,8 +1,10 @@
 // app/(dashboard)/user-management/page.tsx
 
+import { Suspense } from 'react';
 import { AddUserFormDialog } from './add-user-form';
-import { UserManagementTable } from '@/components/dashboard/UserManagementTable';
+import { UserManagementTable, TableSkeleton } from '@/components/dashboard/UserManagementTable';
 import { fetchUsers } from './actions';
+import { UsersIcon } from 'lucide-react';
 
 export default async function UserManagementPage() {
     // This Server Component now fetches ALL data needed for the page.
@@ -21,8 +23,30 @@ export default async function UserManagementPage() {
                     <AddUserFormDialog roles={roles} />
                 </div>
             </div>
-            {/* The table component now receives all data as props */}
-            <UserManagementTable users={users} roles={roles} pageCount={pageCount} />
+
+            <Suspense fallback={<TableSkeleton />}>
+                <UserManagementTableWrapper />
+            </Suspense>
+
         </div>
     );
+}
+
+async function UserManagementTableWrapper() {
+    const { users, roles, pageCount } = await fetchUsers(0, 10);
+
+    if (users.length === 0) {
+        return (
+            <div className="flex h-[50vh] flex-col items-center justify-center rounded-md border border-dashed">
+                <UsersIcon className="h-16 w-16 text-muted-foreground" />
+                <h3 className="mt-4 text-lg font-semibold">No Users Found</h3>
+                <p className="mb-4 mt-2 text-sm text-muted-foreground">
+                    You have not added any users yet. Get started by adding one.
+                </p>
+                <AddUserFormDialog roles={roles} />
+            </div>
+        )
+    }
+
+    return <UserManagementTable users={users} roles={roles} pageCount={pageCount} />;
 }

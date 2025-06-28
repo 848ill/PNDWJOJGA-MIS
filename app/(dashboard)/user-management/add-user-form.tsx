@@ -39,7 +39,7 @@ export function AddUserFormDialog({ roles }: AddUserFormDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>Add New User</Button>
+                <Button className="bg-black text-white hover:bg-black/90">Add New User</Button>
             </DialogTrigger>
             <DialogContent className="bg-white">
                 <DialogHeader>
@@ -60,12 +60,16 @@ interface AddUserFormProps {
 }
 
 function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending} className="w-full">
-      {pending ? 'Adding User...' : 'Add User'}
-    </Button>
-  );
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            className="w-full bg-black text-white hover:bg-black/90"
+        >
+            {pending ? 'Adding User...' : 'Add User'}
+        </Button>
+    );
 }
 
 export function AddUserForm({ roles, onUserAdded }: AddUserFormProps) {
@@ -133,18 +137,24 @@ export function AddUserForm({ roles, onUserAdded }: AddUserFormProps) {
                     <Label htmlFor="roleId" className="text-right">
                         Role
                     </Label>
-                    <Select name="roleId" required>
-                        <SelectTrigger className="col-span-3">
-                            <SelectValue placeholder="Select a role" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                            {roles.map((role) => (
-                                <SelectItem key={role.id} value={role.id}>
-                                    {role.name.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <div className="col-span-3">
+                        <Select name="roleId" required>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a role" />
+                            </SelectTrigger>
+                            <SelectContent
+                                className="bg-white"
+                                sideOffset={5}
+                                position="popper"
+                            >
+                                {roles.map((role) => (
+                                    <SelectItem key={role.id} value={role.id}>
+                                        {role.name.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
                 <div className="pt-4">
                     <SubmitButton />

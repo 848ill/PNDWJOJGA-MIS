@@ -8,6 +8,7 @@ import {
     getPaginationRowModel,
     useReactTable,
 } from '@tanstack/react-table';
+import { motion } from 'framer-motion';
 
 import {
     Table,
@@ -18,6 +19,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Button } from './button';
+import { Skeleton } from './skeleton';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -63,21 +65,39 @@ export function DataTable<TData, TValue>({
                             </TableRow>
                         ))}
                     </TableHeader>
-                    <TableBody>
+                    <motion.tbody
+                        initial="initial"
+                        animate="animate"
+                        variants={{
+                            initial: { opacity: 0 },
+                            animate: {
+                                opacity: 1,
+                                transition: {
+                                    staggerChildren: 0.05,
+                                },
+                            },
+                        }}
+                    >
                         {isPending ? (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className="h-24 text-center"
-                                >
-                                    Loading...
-                                </TableCell>
-                            </TableRow>
+                            Array.from({ length: 5 }).map((_, i) => (
+                                <TableRow key={i}>
+                                    {columns.map((column) => (
+                                        <TableCell key={(column as any).id || i}>
+                                            <Skeleton className="h-6 w-full" />
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
                         ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow
+                                <motion.tr
                                     key={row.id}
                                     data-state={row.getIsSelected() && 'selected'}
+                                    variants={{
+                                        initial: { opacity: 0, y: 20 },
+                                        animate: { opacity: 1, y: 0 },
+                                    }}
+                                    layout
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
@@ -87,7 +107,7 @@ export function DataTable<TData, TValue>({
                                             )}
                                         </TableCell>
                                     ))}
-                                </TableRow>
+                                </motion.tr>
                             ))
                         ) : (
                             <TableRow>
@@ -99,23 +119,23 @@ export function DataTable<TData, TValue>({
                                 </TableCell>
                             </TableRow>
                         )}
-                    </TableBody>
+                    </motion.tbody>
                 </Table>
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <Button
-                    variant="outline"
                     size="sm"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
+                    className="bg-black text-white hover:bg-black/90"
                 >
                     Previous
                 </Button>
                 <Button
-                    variant="outline"
                     size="sm"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
+                    className="bg-black text-white hover:bg-black/90"
                 >
                     Next
                 </Button>
