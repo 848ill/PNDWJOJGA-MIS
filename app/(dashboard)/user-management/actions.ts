@@ -84,15 +84,19 @@ export async function addUser(prevState: State, formData: FormData): Promise<Sta
 }
 
 // --- NEW: FETCH USERS SERVER ACTION ---
-export async function fetchUsers(
-  pageIndex: number,
-  pageSize: number
-): Promise<{ users: UserRow[]; roles: Role[]; pageCount: number; error: string | null }> {
+export async function fetchUsers(searchParams: {
+  page?: string;
+  limit?: string;
+}): Promise<{ users: UserRow[]; roles: Role[]; pageCount: number; error: string | null }> {
   const supabase = createAdminSupabaseClient(); // Use the admin client
 
   try {
-    const from = pageIndex * pageSize;
-    const to = (pageIndex + 1) * pageSize - 1;
+    const page = Number(searchParams?.page ?? '1');
+    const limit = Number(searchParams?.limit ?? '10');
+    const pageIndex = page - 1;
+
+    const from = pageIndex * limit;
+    const to = pageIndex * limit + limit - 1;
 
     // Fetch users with pagination and join roles
     const { data: usersData, error: usersError, count: usersCount } = await supabase
@@ -126,7 +130,7 @@ export async function fetchUsers(
     }));
 
     const roles: Role[] = (rolesData || []);
-    const pageCount = usersCount !== null ? Math.ceil(usersCount / pageSize) : 0;
+    const pageCount = usersCount !== null ? Math.ceil(usersCount / limit) : 0;
 
     return { users: mappedUsers, roles, pageCount, error: null };
 

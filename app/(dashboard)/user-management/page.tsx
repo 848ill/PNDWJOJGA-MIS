@@ -15,9 +15,7 @@ export default async function UserManagementPage({
     limit?: string;
   };
 }) {
-    const currentPage = Number(searchParams?.page) - 1 || 0;
-    const limit = Number(searchParams?.limit) || 10;
-    const { users, roles, pageCount } = await fetchUsers(currentPage, limit);
+    const { users, roles, pageCount } = await fetchUsers(searchParams ?? {});
 
     const variants = {
         hidden: { opacity: 0, y: 20 },
@@ -59,7 +57,9 @@ export default async function UserManagementPage({
                             </div>
                         </CardContent>
                     ) : (
-                        <UserManagementTable users={users} roles={roles} pageCount={pageCount} />
+                        <CardContent className="p-6 pt-0">
+                            <UserManagementTable users={users} roles={roles} pageCount={pageCount} />
+                        </CardContent>
                     )}
                 </Card>
             </MotionDiv>

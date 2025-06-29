@@ -6,6 +6,7 @@ import ComplaintChart from '@/components/dashboard/ComplaintCharts';
 import AiInsightsDisplay from '@/components/dashboard/AiInsightsDisplay';
 import { Activity, ArrowUpRight, CreditCard, DollarSign, Users, MapIcon, LineChartIcon, BrainCircuitIcon } from 'lucide-react';
 import DashboardMapWrapper from '@/components/dashboard/DashboardMapWrapper';
+import { MapPlaceholder } from '@/components/dashboard/MapPlaceholder';
 
 // --- Data Fetching Functions (Server-Side) ---
 
@@ -61,11 +62,17 @@ async function getRecentComplaintData() {
     const complaintLocations = (data || [])
       .map((c) => {
         if (c.latitude !== null && c.longitude !== null) {
-          return { lat: c.latitude, lng: c.longitude };
+          return { 
+            lat: c.latitude, 
+            lng: c.longitude,
+            id: c.id,
+            category: c.categories?.[0]?.name ?? 'Belum Dikategorikan',
+            summary: c.ai_summary ?? 'Tidak ada ringkasan',
+          };
         }
         return null;
       })
-      .filter((l): l is { lat: number; lng: number } => l !== null);
+      .filter((l): l is { lat: number; lng: number; id: string; category: string; summary: string; } => l !== null);
       
     const aiInsights = (data || [])
       .filter(c => c.main_topic || c.ai_summary)
@@ -117,9 +124,11 @@ async function WeeklyComplaintsCard() {
 async function MainDashboardContent() {
     const { dailyCounts, complaintLocations, aiInsights } = await getRecentComplaintData();
     return (
-        <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2 animate-fade-in-up [animation-delay:300ms]">
-            <DashboardMapWrapper complaintLocations={complaintLocations} />
-            <Card variant="glass">
+        <>
+            <Suspense fallback={<Card variant="glass"><CardContent className="h-[460px]"><MapPlaceholder /></CardContent></Card>}>
+                <DashboardMapWrapper complaintLocations={complaintLocations} />
+            </Suspense>
+            <Card variant="glass" className="animate-fade-in-up [animation-delay:300ms]">
                 <CardHeader>
                     <CardTitle className="flex items-center text-gray-800"><LineChartIcon className="mr-2 h-5 w-5" /> Pengaduan 7 Hari Terakhir</CardTitle>
                 </CardHeader>
@@ -127,7 +136,7 @@ async function MainDashboardContent() {
                     <ComplaintChart dailyCounts={dailyCounts} />
                 </CardContent>
             </Card>
-            <Card variant="glass">
+            <Card variant="glass" className="animate-fade-in-up [animation-delay:400ms]">
                 <CardHeader>
                     <CardTitle className="flex items-center text-gray-800"><BrainCircuitIcon className="mr-2 h-5 w-5" /> Wawasan Berbasis AI</CardTitle>
                     <CardDescription>Analisis cerdas dari data pengaduan Anda.</CardDescription>
@@ -136,7 +145,7 @@ async function MainDashboardContent() {
                     <AiInsightsDisplay insights={aiInsights} />
                 </CardContent>
             </Card>
-        </div>
+        </>
     );
 }
 
@@ -159,7 +168,7 @@ export default function DashboardHomePage() {
             </Suspense>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
             <Suspense fallback={<DashboardContentSkeleton />}>
                 <MainDashboardContent />
             </Suspense>
@@ -172,16 +181,7 @@ export default function DashboardHomePage() {
 
 function DashboardContentSkeleton() {
     return (
-        <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
-            <Card className="lg:col-span-2">
-                <CardHeader>
-                    <div className="h-6 w-48 rounded-md bg-muted animate-pulse" />
-                    <div className="mt-2 h-4 w-64 rounded-md bg-muted animate-pulse" />
-                </CardHeader>
-                <CardContent className="h-[400px] w-full p-0">
-                    <div className="h-full w-full bg-muted animate-pulse rounded-b-lg" />
-                </CardContent>
-            </Card>
+        <>
             <Card>
                 <CardHeader>
                     <div className="h-6 w-3/4 rounded-md bg-muted animate-pulse" />
@@ -203,6 +203,6 @@ function DashboardContentSkeleton() {
                     </div>
                 </CardContent>
             </Card>
-        </div>
+        </>
     );
 }

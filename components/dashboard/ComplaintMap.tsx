@@ -1,85 +1,77 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat'; // Import leaflet.heat plugin
-
+import 'react-leaflet-cluster/lib/assets/MarkerCluster.css';
+import 'react-leaflet-cluster/lib/assets/MarkerCluster.Default.css';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
+
+// Custom Icon
+const customIcon = new L.Icon({
+    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+    shadowSize: [41, 41],
+});
 
 // Define the exact type expected by leaflet.heat
 type HeatLatLngTuple = [number, number, number];
 
-interface ComplaintMapProps {
-  complaintLocations: { lat: number; lng: number; intensity?: number }[];
+interface Complaint {
+    lat: number;
+    lng: number;
+    id: string;
+    category: string;
+    summary: string;
+    intensity?: number;
 }
 
-function HeatmapLayer({ complaintLocations }: { complaintLocations: ComplaintMapProps['complaintLocations'] }) {
-  const map = useMap(); // Get map instance using useMap
+interface ComplaintMapProps {
+  complaintLocations: Complaint[];
+}
+
+function HeatmapLayer({ complaintLocations }: { complaintLocations: Complaint[] }) {
+  const map = useMap();
   const heatLayerRef = useRef<L.HeatLayer | null>(null);
 
   useEffect(() => {
-    // Tambahkan log untuk melihat data mentah yang masuk
-    console.log('Original complaintLocations:', complaintLocations);
-
     const validLocations = complaintLocations.filter(
       loc => typeof loc.lat === 'number' && typeof loc.lng === 'number' && !isNaN(loc.lat) && !isNaN(loc.lng)
     );
     
-    const latLngs: HeatLatLngTuple[] = validLocations.map(loc => [loc.lat, loc.lng, loc.intensity || 1]);
+    const latLngs: HeatLatLngTuple[] = validLocations.map(loc => [loc.lat, loc.lng, loc.intensity || 0.5]);
 
-    console.log('HeatmapLayer useEffect triggered.');
-    console.log('Map instance:', map);
-    console.log('Filtered LatLngs count:', latLngs.length);
-    if (latLngs.length > 0) {
-      console.log('First LatLng entry:', latLngs[0]);
-      console.log('Last LatLng entry:', latLngs[latLngs.length - 1]); // Cek juga entry terakhir
-    }
-
-    if (map) { // Pastikan map instance tersedia
+    if (map) {
       if (latLngs.length > 0) {
         if (!heatLayerRef.current) {
-          console.log('Initializing new heatLayer...');
-          try {
-            heatLayerRef.current = (L as any).heatLayer(latLngs, {
-              radius: 20,
-              blur: 12,
-              maxZoom: 17,
-              minOpacity: 0.5,
-              gradient: { 0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red' }
-            });
-            heatLayerRef.current!.addTo(map);
-            console.log('HeatLayer added to map successfully.');
-          } catch (e) {
-            console.error('Error initializing heatLayer:', e);
-          }
+          heatLayerRef.current = (L as any).heatLayer(latLngs, {
+            radius: 25,
+            blur: 15,
+            maxZoom: 17,
+            minOpacity: 0.4,
+            gradient: { 0.4: '#a7ddff', 0.65: '#3b82f6', 1: '#1d4ed8' } // Premium blue gradient
+          });
+          heatLayerRef.current!.addTo(map);
         } else {
-          console.log('Updating existing heatLayer data...');
-          try {
-            heatLayerRef.current!.setLatLngs(latLngs);
-            console.log('HeatLayer data updated successfully.');
-          } catch (e) {
-            console.error('Error updating heatLayer data:', e);
-          }
+          heatLayerRef.current!.setLatLngs(latLngs);
         }
-        map.invalidateSize();
-        console.log('Map invalidated size.');
+        // No need to call invalidateSize here unless the map container size changes dynamically
       } else {
-        // Jika tidak ada data dan layer sudah ada, hapus layer
         if (heatLayerRef.current) {
-          console.log('No valid data, removing heatLayer from map...');
           map.removeLayer(heatLayerRef.current);
           heatLayerRef.current = null;
         }
       }
-    } else {
-      console.log('Map instance not yet available.');
     }
 
-    // Fungsi Cleanup
     return () => {
       if (map && heatLayerRef.current) {
-        console.log('Cleaning up: Removing heatLayer from map...');
         map.removeLayer(heatLayerRef.current);
         heatLayerRef.current = null;
       }
@@ -87,6 +79,28 @@ function HeatmapLayer({ complaintLocations }: { complaintLocations: ComplaintMap
   }, [map, complaintLocations]);
 
   return null;
+}
+
+function MarkersLayer({ complaintLocations }: { complaintLocations: Complaint[] }) {
+    return (
+        <MarkerClusterGroup chunkedLoading>
+            {complaintLocations.map((loc) => (
+                <Marker key={loc.id} position={[loc.lat, loc.lng]} icon={customIcon}>
+                    <Popup>
+                        <div className="font-sans w-64">
+                            <div className="flex justify-between items-start mb-1">
+                                <h3 className="font-bold text-base pr-2">{loc.category}</h3>
+                                <span className="text-xs font-mono bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded-md">
+                                    {loc.id.substring(0, 8)}
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-600">{loc.summary}</p>
+                        </div>
+                    </Popup>
+                </Marker>
+            ))}
+        </MarkerClusterGroup>
+    );
 }
 
 export default function ComplaintMap({ complaintLocations }: ComplaintMapProps) {
@@ -111,11 +125,12 @@ export default function ComplaintMap({ complaintLocations }: ComplaintMapProps) 
       className="h-full w-full"
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png"
         crossOrigin="anonymous"
       />
       <HeatmapLayer complaintLocations={complaintLocations} />
+      <MarkersLayer complaintLocations={complaintLocations} />
     </MapContainer>
   );
 }

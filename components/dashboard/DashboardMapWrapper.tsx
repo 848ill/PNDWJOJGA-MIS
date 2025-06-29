@@ -9,15 +9,22 @@ const ComplaintMap = dynamic(() => import('@/components/dashboard/ComplaintMap')
   loading: () => <div className="h-full w-full bg-muted animate-pulse rounded-lg" />,
 });
 
-interface DashboardMapWrapperProps {
-  complaintLocations: { lat: number; lng: number; intensity?: number }[];
+interface ComplaintMapProps {
+  complaintLocations: { 
+    lat: number; 
+    lng: number;
+    id: string;
+    category: string;
+    summary: string;
+    intensity?: number;
+  }[];
 }
 
-export default function DashboardMapWrapper({ complaintLocations }: DashboardMapWrapperProps) {
+export default function DashboardMapWrapper({ complaintLocations }: ComplaintMapProps) {
   return (
-    <Card className="lg:col-span-2">
+    <Card className="lg:col-span-2" variant="glass">
       <CardHeader>
-        <CardTitle className="flex items-center">
+        <CardTitle className="flex items-center text-gray-800">
           <MapIcon className="mr-2 h-5 w-5" /> Titik Rawan Pengaduan
         </CardTitle>
         <CardDescription>Distribusi geospasial dari pengaduan terkini.</CardDescription>

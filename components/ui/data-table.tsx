@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
     ColumnDef,
     flexRender,
@@ -34,6 +35,14 @@ export function DataTable<TData, TValue>({
     pageCount,
     isPending,
 }: DataTableProps<TData, TValue>) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    // Get the current page index from the URL search params
+    const page = searchParams?.get('page') ?? '1';
+    const currentPage = Number(page);
+
     const table = useReactTable({
         data,
         columns,
@@ -41,7 +50,19 @@ export function DataTable<TData, TValue>({
         getPaginationRowModel: getPaginationRowModel(),
         pageCount: pageCount,
         manualPagination: true,
+        state: {
+            pagination: {
+                pageIndex: currentPage - 1, // react-table is 0-indexed
+                pageSize: 10, // Assuming a fixed page size
+            },
+        },
     });
+
+    const createPageURL = (pageNumber: number | string) => {
+        const params = new URLSearchParams(searchParams);
+        params.set('page', pageNumber.toString());
+        return `${pathname}?${params.toString()}`;
+    };
 
     return (
         <div>
@@ -122,23 +143,28 @@ export function DataTable<TData, TValue>({
                     </motion.tbody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
-                <Button
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                    style={{ backgroundColor: 'black', color: 'white' }}
-                >
-                    Previous
-                </Button>
-                <Button
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                    style={{ backgroundColor: 'black', color: 'white' }}
-                >
-                    Next
-                </Button>
+            <div className="flex items-center justify-between py-4">
+                 <span className="text-sm text-muted-foreground">
+                    Halaman {currentPage} dari {table.getPageCount()}
+                </span>
+                <div className="flex items-center space-x-2">
+                    <Button
+                        size="sm"
+                        onClick={() => router.push(createPageURL(currentPage - 1))}
+                        disabled={!table.getCanPreviousPage()}
+                        className="bg-black text-white hover:bg-gray-900"
+                    >
+                        Sebelumnya
+                    </Button>
+                    <Button
+                        size="sm"
+                        onClick={() => router.push(createPageURL(currentPage + 1))}
+                        disabled={!table.getCanNextPage()}
+                        className="bg-black text-white hover:bg-gray-900"
+                    >
+                        Berikutnya
+                    </Button>
+                </div>
             </div>
         </div>
     );
