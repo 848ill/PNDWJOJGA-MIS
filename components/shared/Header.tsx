@@ -43,7 +43,10 @@ export default function Header({ userName, userRole, className }: HeaderProps) {
   ];
 
   return (
-    <header className={cn("sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-40", className)}>
+    <header className={cn(
+      "sticky top-0 flex h-16 items-center gap-4 border-b border-white/20 bg-white/60 px-4 backdrop-blur-xl md:px-6 z-40",
+      className
+    )}>
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         {/* The title can be a link to the dashboard */}
         <Link
@@ -84,7 +87,7 @@ export default function Header({ userName, userRole, className }: HeaderProps) {
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
+              <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/20">
                 <Avatar>
                   <AvatarImage src="https://i.pravatar.cc/300" alt="@shadcn" />
                   <AvatarFallback>{userName?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>

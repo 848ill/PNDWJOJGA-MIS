@@ -35,29 +35,7 @@ function ComplaintsPageSkeleton() {
     )
 }
 
-async function ComplaintsList({ searchParams }: { searchParams: { status?: string, q?: string, sort?: string, order?: string } }) {
-    // We pass searchParams properties directly to the server action
-    const { complaints, pageCount, error } = await fetchComplaints({
-        pageIndex: 0, 
-        pageSize: 10, 
-        status: searchParams.status, 
-        queryText: searchParams.q, 
-        sort: searchParams.sort, 
-        order: searchParams.order
-    });
-
-    if (error) {
-        return <div className="text-red-500 text-center p-8">Error: {error}</div>;
-    }
-
-    if (complaints.length === 0) {
-        return <div className="text-center text-muted-foreground p-8">No complaints found.</div>;
-    }
-
-    return <ComplaintsTable data={complaints} pageCount={pageCount} />;
-}
-
-export default function ComplaintsPage({
+export default async function ComplaintsPage({
     searchParams,
 }: {
     searchParams: {
@@ -67,11 +45,24 @@ export default function ComplaintsPage({
         order?: string;
     };
 }) {
+    // Langsung fetch data di komponen Page
+    const { complaints, pageCount, error } = await fetchComplaints({
+        pageIndex: 0, 
+        pageSize: 10, 
+        searchParams: searchParams
+    });
+
     return (
         <div className="p-4">
             <h1 className="text-3xl font-bold mb-6">Semua Pengaduan</h1>
             <Suspense fallback={<ComplaintsPageSkeleton />}>
-                <ComplaintsList searchParams={searchParams} />
+                {error ? (
+                    <div className="text-red-500 text-center p-8">Error: {error}</div>
+                ) : complaints.length === 0 ? (
+                    <div className="text-center text-muted-foreground p-8">No complaints found.</div>
+                ) : (
+                    <ComplaintsTable data={complaints} pageCount={pageCount} />
+                )}
             </Suspense>
         </div>
     );

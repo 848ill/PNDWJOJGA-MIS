@@ -6,21 +6,21 @@ import { type ComplaintRow } from '@/components/dashboard/ComplaintsTable';
 interface FetchComplaintsParams {
   pageIndex: number;
   pageSize: number;
-  status?: string | null;
-  queryText?: string | null;
-  sort?: string | null;
-  order?: string | null;
+  searchParams: {
+    status?: string | null;
+    q?: string | null;
+    sort?: string | null;
+    order?: string | null;
+  };
 }
 
 export async function fetchComplaints({
   pageIndex,
   pageSize,
-  status,
-  queryText,
-  sort,
-  order,
+  searchParams,
 }: FetchComplaintsParams): Promise<{ complaints: ComplaintRow[]; pageCount: number; error: string | null }> {
   const supabase = createAdminSupabaseClient();
+  const { status, q: queryText, sort, order } = searchParams;
 
   try {
     const from = pageIndex * pageSize;

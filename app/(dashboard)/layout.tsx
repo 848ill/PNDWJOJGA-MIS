@@ -41,7 +41,10 @@ export default function DashboardLayout({
         .eq('id', sessionUser.id)
         .single();
       if (userData && !error) {
-        setUserRole((userData.roles as { name: string })?.name || null);
+        // Handle potential array of roles, even if we expect one
+        const userRoles = userData.roles as unknown as { name: string } | { name: string }[];
+        const roleName = Array.isArray(userRoles) ? userRoles[0]?.name : userRoles?.name;
+        setUserRole(roleName || null);
         setUserName((userData.full_name as string) || null);
       }
       setLoading(false);
@@ -67,7 +70,10 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-gray-100">
+      <div className="absolute inset-0 -z-10 h-full w-full bg-gray-100 bg-[linear-gradient(to_right,#e0e0e0_1px,transparent_1px),linear-gradient(to_bottom,#e0e0e0_1px,transparent_1px)] bg-[size:6rem_4rem]">
+            <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_600px_at_50%_100px,#c9d8ff,transparent)]"></div>
+      </div>
       <Sidebar 
         userRole={userRole} 
         isCollapsed={isCollapsed}
@@ -83,7 +89,7 @@ export default function DashboardLayout({
           userName={userName} 
           userRole={userRole} 
         />
-        <main className="flex-1 p-4 md:p-8 overflow-y-auto">
+        <main className="flex-1">
           {children}
         </main>
       </div>

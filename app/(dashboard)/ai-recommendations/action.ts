@@ -119,7 +119,7 @@ export async function generateRecommendations(history: ChatHistoryItem[], newMes
         if (response.text()) {
             return { success: true, report: response.text() };
         } else {
-             // Handle cases where the response might be blocked
+             
             const blockReason = response.promptFeedback?.blockReason;
             const safetyRatings = response.promptFeedback?.safetyRatings;
             console.error("AI response blocked.", { blockReason, safetyRatings });

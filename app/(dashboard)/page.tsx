@@ -87,13 +87,13 @@ async function getRecentComplaintData() {
 async function TotalComplaintsCard() {
     const total = await getTotalComplaints();
     return (
-        <Card>
+        <Card variant="glass" className="animate-fade-in-up">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Pengaduan</CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-gray-700">Total Pengaduan</CardTitle>
+                <Activity className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{total.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-gray-900">{total.toLocaleString()}</div>
             </CardContent>
         </Card>
     );
@@ -102,13 +102,13 @@ async function TotalComplaintsCard() {
 async function WeeklyComplaintsCard() {
     const total = await getWeeklyComplaints();
     return (
-        <Card>
+        <Card variant="glass" className="animate-fade-in-up [animation-delay:100ms]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Baru Minggu Ini</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-gray-700">Baru Minggu Ini</CardTitle>
+                <Users className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{total.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-gray-900">{total.toLocaleString()}</div>
             </CardContent>
         </Card>
     );
@@ -117,19 +117,19 @@ async function WeeklyComplaintsCard() {
 async function MainDashboardContent() {
     const { dailyCounts, complaintLocations, aiInsights } = await getRecentComplaintData();
     return (
-        <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2 animate-fade-in-up [animation-delay:300ms]">
             <DashboardMapWrapper complaintLocations={complaintLocations} />
-            <Card>
+            <Card variant="glass">
                 <CardHeader>
-                    <CardTitle className="flex items-center"><LineChartIcon className="mr-2 h-5 w-5" /> Pengaduan 7 Hari Terakhir</CardTitle>
+                    <CardTitle className="flex items-center text-gray-800"><LineChartIcon className="mr-2 h-5 w-5" /> Pengaduan 7 Hari Terakhir</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <ComplaintChart dailyCounts={dailyCounts} />
                 </CardContent>
             </Card>
-            <Card>
+            <Card variant="glass">
                 <CardHeader>
-                    <CardTitle className="flex items-center"><BrainCircuitIcon className="mr-2 h-5 w-5" /> Wawasan Berbasis AI</CardTitle>
+                    <CardTitle className="flex items-center text-gray-800"><BrainCircuitIcon className="mr-2 h-5 w-5" /> Wawasan Berbasis AI</CardTitle>
                     <CardDescription>Analisis cerdas dari data pengaduan Anda.</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[400px] overflow-y-auto">
@@ -144,20 +144,26 @@ async function MainDashboardContent() {
 
 export default function DashboardHomePage() {
   return (
-    <div className="flex flex-1 flex-col gap-8 p-4 md:p-8">
-      <h1 className="text-3xl font-bold tracking-tight">Dasbor</h1>
-      <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-          <Suspense fallback={<CardSkeleton />}>
-              <TotalComplaintsCard />
-          </Suspense>
-          <Suspense fallback={<CardSkeleton />}>
-              <WeeklyComplaintsCard />
-          </Suspense>
-          {/* We can add more KPI cards here later */}
-      </div>
-      <Suspense fallback={<DashboardContentSkeleton />}>
-          <MainDashboardContent />
-      </Suspense>
+    <div className="relative z-0 flex flex-1 flex-col gap-8 p-4 md:p-8">
+        <div className="animate-fade-in-up">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-800">Dasbor</h1>
+            <p className="text-gray-500 mt-1">Selamat datang kembali! Ini adalah ringkasan sistem Anda.</p>
+        </div>
+        
+        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+            <Suspense fallback={<CardSkeleton />}>
+                <TotalComplaintsCard />
+            </Suspense>
+            <Suspense fallback={<CardSkeleton />}>
+                <WeeklyComplaintsCard />
+            </Suspense>
+        </div>
+
+        <div className="mt-8">
+            <Suspense fallback={<DashboardContentSkeleton />}>
+                <MainDashboardContent />
+            </Suspense>
+        </div>
     </div>
   );
 }
