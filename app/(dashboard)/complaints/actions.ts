@@ -2,6 +2,7 @@
 
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { type ComplaintRow } from '@/components/dashboard/ComplaintsTable';
+import { revalidatePath } from 'next/cache';
 
 interface FetchComplaintsParams {
   pageIndex: number;
@@ -129,6 +130,70 @@ export async function updateComplaintPriority(
         console.error('Server Action Error (updateComplaintPriority - general catch):', e);
         return { success: false, error: e.message || 'An unexpected error occurred.' };
     }
+}
+
+export async function fetchComplaintDetails(complaintId: string) {
+    const supabase = createAdminSupabaseClient();
+    const { data, error } = await supabase
+        .from('complaints')
+        .select('*, categories(name), complaint_updates(*)')
+        .eq('id', complaintId)
+        .single();
+    
+    if (error) {
+        console.error("Error fetching complaint details:", error);
+        return { success: false, data: null, error: error.message };
+    }
+    return { success: true, data, error: null };
+}
+
+export async function addComplaintUpdate({ complaintId, updateText }: { complaintId: string, updateText: string }) {
+    const supabase = createAdminSupabaseClient();
+    const { data, error } = await supabase
+        .from('complaint_updates')
+        .insert({ complaint_id: complaintId, update_text: updateText })
+        .select()
+        .single();
+
+    if (error) {
+        return { success: false, message: error.message, data: null };
+    }
+    revalidatePath(`/complaints/${complaintId}`);
+    return { success: true, message: 'Update berhasil ditambahkan.', data };
+}
+
+export async function changeComplaintStatus({ complaintId, status }: { complaintId: string, status: 'open' | 'in progress' | 'resolved' | 'closed' }) {
+    const supabase = createAdminSupabaseClient();
+    const { data, error } = await supabase
+        .from('complaints')
+        .update({ status })
+        .eq('id', complaintId)
+        .select()
+        .single();
+    
+    if (error) {
+        return { success: false, message: error.message, data: null };
+    }
+    revalidatePath(`/complaints/${complaintId}`);
+    revalidatePath('/complaints');
+    return { success: true, message: `Status berhasil diubah menjadi ${status}.`, data };
+}
+
+export async function changeComplaintPriority({ complaintId, priority }: { complaintId: string, priority: 'low' | 'medium' | 'high' }) {
+    const supabase = createAdminSupabaseClient();
+    const { data, error } = await supabase
+        .from('complaints')
+        .update({ priority })
+        .eq('id', complaintId)
+        .select()
+        .single();
+    
+    if (error) {
+        return { success: false, message: error.message, data: null };
+    }
+    revalidatePath(`/complaints/${complaintId}`);
+    revalidatePath('/complaints');
+    return { success: true, message: `Prioritas berhasil diubah menjadi ${priority}.`, data };
 }
 
 // This line explicitly marks the file as a module, fixing potential import errors.

@@ -3,8 +3,8 @@ import { Suspense } from 'react';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin'; // Use server client for server components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardSkeleton } from '@/components/ui/card';
 import ComplaintChart from '@/components/dashboard/ComplaintCharts';
-import AiInsightsDisplay from '@/components/dashboard/AiInsightsDisplay';
-import { Activity, ArrowUpRight, CreditCard, DollarSign, Users, MapIcon, LineChartIcon, BrainCircuitIcon } from 'lucide-react';
+import { AiInsightsDisplay } from '@/components/dashboard/AiInsightsDisplay';
+import { Activity, Users, LineChartIcon, BrainCircuitIcon } from 'lucide-react';
 import DashboardMapWrapper from '@/components/dashboard/DashboardMapWrapper';
 import { MapPlaceholder } from '@/components/dashboard/MapPlaceholder';
 

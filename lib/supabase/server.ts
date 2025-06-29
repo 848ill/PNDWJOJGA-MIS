@@ -13,10 +13,12 @@ import { type Database } from '@/lib/types/supabase'; // Import your generated d
  * @param cookieStore The cookies instance from 'next/headers' (e.g., `cookies()`).
  * @returns A SupabaseClient instance configured for the user's session.
  */
-export function createServerSupabaseClient(cookieStore: any) {
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
+export const createServerClient = () => {
+  const cookieStore = cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name: string) {

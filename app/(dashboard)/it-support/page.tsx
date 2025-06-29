@@ -1,5 +1,5 @@
 // app/(dashboard)/it-support/page.tsx
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { MotionDiv } from "@/components/shared/MotionDiv";
 import { Wrench } from "lucide-react";
 

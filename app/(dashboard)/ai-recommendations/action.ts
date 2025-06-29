@@ -1,7 +1,7 @@
 // app/(dashboard)/ai-recommendations/action.ts
 'use server';
 
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, ChatSession } from '@google/generative-ai';
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 
 // Define the structure for chat history messages
@@ -97,12 +97,6 @@ export async function generateRecommendations(history: ChatHistoryItem[], newMes
             - **Language:** Your primary language for interaction is Indonesian (Bahasa Indonesia).
         `;
         
-        // Gemini API expects "model" role, not "assistant". We map it here.
-        const mappedHistory = (history as any[]).map(msg => ({
-            ...msg,
-            role: msg.role === 'assistant' ? 'model' : msg.role,
-        }));
-
         // Start a chat session with the system instruction and previous history
         const chat = model.startChat({
             generationConfig,
@@ -110,7 +104,7 @@ export async function generateRecommendations(history: ChatHistoryItem[], newMes
             history: [
                 { role: "user", parts: [{ text: systemInstruction }] },
                 { role: "model", parts: [{ text: "Baik, saya mengerti. Saya PAWA, siap membantu menganalisis data pengaduan yang Anda berikan." }] },
-                ...mappedHistory
+                ...history
             ]
         });
 
@@ -129,14 +123,14 @@ export async function generateRecommendations(history: ChatHistoryItem[], newMes
         if (response.text()) {
             return { success: true, report: response.text() };
         } else {
-             
             const blockReason = response.promptFeedback?.blockReason;
             const safetyRatings = response.promptFeedback?.safetyRatings;
             console.error("AI response blocked.", { blockReason, safetyRatings });
             return { success: false, report: `I apologize, but my response was blocked. This may be due to safety filters. Reason: ${blockReason || 'Unknown'}.` };
         }
-    } catch (error: any) {
+    } catch (error) {
         console.error('Gemini API error:', error);
-        return { success: false, report: `An error occurred while communicating with the AI service: ${error.message || 'Unknown error'}` };
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        return { success: false, report: `An error occurred while communicating with the AI service: ${errorMessage}` };
     }
 }

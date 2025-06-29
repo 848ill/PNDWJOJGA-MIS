@@ -10,10 +10,10 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
+import { useCallback } from 'react';
 
 import {
     Table,
-    TableBody,
     TableCell,
     TableHead,
     TableHeader,
@@ -39,10 +39,17 @@ export function DataTable<TData, TValue>({
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    // Get the current page index from the URL search params
-    const page = searchParams?.get('page') ?? '1';
-    const currentPage = Number(page);
+    const currentPage = Number(searchParams.get('page')) || 1;
 
+    const createQueryString = useCallback(
+        (name: string, value: string) => {
+            const params = new URLSearchParams(searchParams.toString())
+            params.set(name, value)
+            return params.toString()
+        },
+        [searchParams]
+    )
+    
     const table = useReactTable({
         data,
         columns,
@@ -57,12 +64,6 @@ export function DataTable<TData, TValue>({
             },
         },
     });
-
-    const createPageURL = (pageNumber: number | string) => {
-        const params = new URLSearchParams(searchParams);
-        params.set('page', pageNumber.toString());
-        return `${pathname}?${params.toString()}`;
-    };
 
     return (
         <div>
@@ -143,26 +144,37 @@ export function DataTable<TData, TValue>({
                     </motion.tbody>
                 </Table>
             </div>
-            <div className="flex items-center justify-between py-4">
-                 <span className="text-sm text-muted-foreground">
-                    Halaman {currentPage} dari {table.getPageCount()}
-                </span>
-                <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-end space-x-2 py-4">
+                <div className="flex-1 text-sm text-muted-foreground">
+                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                    {table.getFilteredRowModel().rows.length} row(s) selected.
+                </div>
+                <div className="space-x-2">
                     <Button
+                        variant="outline"
                         size="sm"
-                        onClick={() => router.push(createPageURL(currentPage - 1))}
-                        disabled={!table.getCanPreviousPage()}
-                        className="bg-black text-white hover:bg-gray-900"
+                        onClick={() => {
+                            const newPage = currentPage - 1;
+                            if (newPage > 0) {
+                                router.push(pathname + '?' + createQueryString('page', newPage.toString()));
+                            }
+                        }}
+                        disabled={currentPage <= 1}
                     >
-                        Sebelumnya
+                        Previous
                     </Button>
                     <Button
+                        variant="outline"
                         size="sm"
-                        onClick={() => router.push(createPageURL(currentPage + 1))}
-                        disabled={!table.getCanNextPage()}
-                        className="bg-black text-white hover:bg-gray-900"
+                         onClick={() => {
+                            const newPage = currentPage + 1;
+                            if (newPage <= table.getPageCount()) {
+                                router.push(pathname + '?' + createQueryString('page', newPage.toString()));
+                            }
+                        }}
+                        disabled={currentPage >= table.getPageCount()}
                     >
-                        Berikutnya
+                        Next
                     </Button>
                 </div>
             </div>

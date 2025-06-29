@@ -1,33 +1,44 @@
 'use client';
 
-import React from 'react';
-import { DataTable } from '@/components/ui/data-table';
-import { type Role, type UserRow } from '@/lib/types/common';
-import { getColumns } from '@/app/(dashboard)/user-management/columns';
+import * as React from 'react';
+import {
+  ColumnDef,
+  Row
+} from "@tanstack/react-table"
+import { DataTable } from "@/components/ui/data-table";
+import { columns } from "@/app/(dashboard)/user-management/columns";
+import { UserActions } from '@/app/(dashboard)/user-management/user-actions';
+import { UserRow, Role } from "@/lib/types/common";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface UserManagementTableProps {
-    users: UserRow[];
-    roles: Role[];
-    pageCount: number;
+  users: UserRow[];
+  roles: Role[];
+  pageCount: number;
+  onUserChanged: () => void;
 }
 
-export function UserManagementTable({
-    users,
-    roles,
-    pageCount,
-}: UserManagementTableProps) {
-    const columns = React.useMemo(() => getColumns(roles), [roles]);
+export function UserManagementTable({ users, roles, pageCount, onUserChanged }: UserManagementTableProps) {
+  
+  const memoizedColumns: ColumnDef<UserRow>[] = React.useMemo(() => [
+    ...columns.filter(c => c.id !== 'actions'),
+    {
+      id: "actions",
+      cell: ({ row }: { row: Row<UserRow> }) => {
+        const user = row.original;
+        return <UserActions user={user} roles={roles} onUserChanged={onUserChanged} />;
+      },
+    }
+  ], [roles, onUserChanged]);
 
-    return (
-        <DataTable
-            columns={columns}
-            data={users}
-            pageCount={pageCount}
-            isPending={false} // Data is pre-fetched by the server
-        />
-    );
+  return (
+    <DataTable
+      columns={memoizedColumns}
+      data={users}
+      pageCount={pageCount}
+    />
+  )
 }
 
 export function TableSkeleton() {

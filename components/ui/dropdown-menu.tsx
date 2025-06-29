@@ -99,6 +99,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     {children}
   </DropdownMenuPrimitive.CheckboxItem>
 ))
+DropdownMenuCheckboxItem.displayName = "DropdownMenuCheckboxItem"
 
 function DropdownMenuRadioGroup({
   ...props
@@ -171,7 +172,7 @@ function DropdownMenuSeparator({
 function DropdownMenuShortcut({
   className,
   ...props
-}: React.ComponentProps<"span">) {
+}: React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
       data-slot="dropdown-menu-shortcut"
@@ -183,6 +184,7 @@ function DropdownMenuShortcut({
     />
   )
 }
+DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
 
 function DropdownMenuSub({
   ...props

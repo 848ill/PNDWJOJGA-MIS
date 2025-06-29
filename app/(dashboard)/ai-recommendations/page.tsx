@@ -55,7 +55,7 @@ export default function AiRecommendationsPage() {
         const errorMessage: Message = { role: 'model', content: result.report || 'Maaf, terjadi sebuah kesalahan.' };
         setMessages(prev => [...prev, errorMessage]);
       }
-    } catch (error) {
+    } catch {
       const errorMessage: Message = { role: 'model', content: 'Terjadi kesalahan yang tidak terduga.' };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
@@ -63,11 +63,11 @@ export default function AiRecommendationsPage() {
     }
   };
 
-  const markdownComponents: { [key: string]: React.FC<any> } = {
-    p: ({ node, ...props }) => <p className="leading-relaxed" {...props} />,
-    ul: ({ node, ...props }) => <ul className="list-disc space-y-1 pl-5" {...props} />,
-    ol: ({ node, ...props }) => <ol className="list-decimal space-y-1 pl-5" {...props} />,
-    strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
+  const markdownComponents: { [key: string]: React.ElementType } = {
+    p: ({ ...props }) => <p className="leading-relaxed" {...props} />,
+    ul: ({ ...props }) => <ul className="list-disc space-y-1 pl-5" {...props} />,
+    ol: ({ ...props }) => <ol className="list-decimal space-y-1 pl-5" {...props} />,
+    strong: ({ ...props }) => <strong className="font-semibold" {...props} />,
   };
 
   return (
@@ -98,7 +98,7 @@ export default function AiRecommendationsPage() {
                         <Sparkles className="mx-auto h-16 w-16 text-blue-500/30 mb-4" />
                         <h3 className="text-lg font-semibold text-gray-700">Selamat Datang di PAWA</h3>
                         <p className="mt-1">Tanyakan apa saja tentang data pengaduan.</p>
-                        <p className="text-sm text-muted-foreground/80 mt-2">contoh: "Apa 3 pengaduan teratas minggu ini?"</p>
+                        <p className="text-sm text-muted-foreground/80 mt-2">Contoh: &quot;Apa 3 pengaduan teratas minggu ini?&quot;</p>
                     </div>
                 ) : (
                     messages.map((msg, index) => (

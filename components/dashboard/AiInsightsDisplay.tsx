@@ -1,102 +1,56 @@
 // components/dashboard/AiInsightsDisplay.tsx
 'use client'; // This component will run on the client-side
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'; // Shadcn Accordion
-import { Badge } from '@/components/ui/badge'; // Shadcn Badge
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BrainCircuitIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { MotionDiv } from "@/components/shared/MotionDiv";
 
-// Install lucide-react if you haven't: npm install lucide-react
-import { Lightbulb, Info, AlertTriangle, CheckCircle } from 'lucide-react'; 
-
-// Define a type for the AI insight data structure
-interface AiInsight {
-  id: string; // Unique ID for the insight (e.g., complaint ID)
-  mainTopic: string | null;
-  summary: string | null;
-  advice: string | null;
-  whatToDo: string | null;
-  sentiment: string | null;
-  categoryName: string | null;
+interface Insight {
+  title: string;
+  summary: string;
 }
 
 interface AiInsightsDisplayProps {
-  insights: AiInsight[];
+  insights: Insight[] | null;
+  isLoading: boolean;
 }
 
-export default function AiInsightsDisplay({ insights }: AiInsightsDisplayProps) {
-  const getSentimentBadgeVariant = (sentiment: string | null) => {
-    switch (sentiment?.toLowerCase()) {
-      case 'negative': return 'destructive';
-      case 'positive': return 'default';
-      case 'neutral': return 'secondary';
-      default: return 'outline';
-    }
-  };
-
-  if (!insights || insights.length === 0) {
-    return (
+export const AiInsightsDisplay = ({ insights, isLoading }: AiInsightsDisplayProps) => {
+  return (
+    <MotionDiv
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <Card>
-        <CardHeader>
-          <CardTitle>Wawasan & Rekomendasi AI</CardTitle>
-          <CardDescription>Analisis cerdas dari data pengaduan Anda.</CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-xl font-bold">AI-Generated Insights</CardTitle>
+          <BrainCircuitIcon className="h-6 w-6 text-blue-500" />
         </CardHeader>
-        <CardContent className="h-48 flex items-center justify-center text-muted-foreground">
-          <p>Tidak ada wawasan AI yang tersedia.</p>
+        <CardContent>
+          {isLoading ? (
+            <div className="space-y-4 pt-4">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          ) : insights && insights.length > 0 ? (
+            <ul className="space-y-3 pt-4">
+              {insights.map((insight, index) => (
+                <li key={index} className="flex items-start p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <div className="ml-3 text-sm">
+                    <p className="font-semibold text-gray-900 dark:text-gray-100">{insight.title}</p>
+                    <p className="text-gray-600 dark:text-gray-400">{insight.summary}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="pt-4 text-center text-gray-500">No AI insights available at the moment.</p>
+          )}
         </CardContent>
       </Card>
-    );
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Wawasan & Rekomendasi AI</CardTitle>
-        <CardDescription>Analisis cerdas dari data pengaduan Anda.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Accordion type="single" collapsible className="w-full">
-          {insights.map((insight) => (
-            <AccordionItem key={insight.id} value={insight.id}>
-              <AccordionTrigger>
-                <div className="flex justify-between items-center w-full">
-                  <span className="font-medium text-left truncate pr-4">
-                    {insight.mainTopic || 'Wawasan Umum'}
-                  </span>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {insight.categoryName && <Badge variant="outline">{insight.categoryName}</Badge>}
-                    {insight.sentiment && (
-                      <Badge variant={getSentimentBadgeVariant(insight.sentiment)}>
-                        {insight.sentiment}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-3 text-sm">
-                  {insight.summary && (
-                    <p><strong className="font-semibold">Ringkasan:</strong> {insight.summary}</p>
-                  )}
-                  {insight.advice && (
-                    <p><strong className="font-semibold">Saran:</strong> {insight.advice}</p>
-                  )}
-                  {insight.whatToDo && (
-                    <p><strong className="font-semibold">Tindakan:</strong> {insight.whatToDo}</p>
-                  )}
-                  {!insight.summary && !insight.advice && !insight.whatToDo && (
-                    <p className="italic">Tidak ada analisis detail yang tersedia.</p>
-                  )}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </CardContent>
-    </Card>
+    </MotionDiv>
   );
-}
+};

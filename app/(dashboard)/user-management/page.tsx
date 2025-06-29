@@ -1,10 +1,10 @@
 // app/(dashboard)/user-management/page.tsx
 
-import { AddUserFormDialog } from './add-user-form';
+import { AddUserForm } from './add-user-form';
 import { UserManagementTable } from '@/components/dashboard/UserManagementTable';
 import { fetchUsers } from './actions';
 import { UsersIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { MotionDiv } from '@/components/shared/MotionDiv';
 
 export default async function UserManagementPage({
@@ -39,7 +39,7 @@ export default async function UserManagementPage({
                     </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <AddUserFormDialog roles={roles} />
+                    <AddUserForm roles={roles} />
                 </div>
             </MotionDiv>
 
@@ -53,7 +53,7 @@ export default async function UserManagementPage({
                                 <p className="mb-4 mt-2 text-sm text-muted-foreground">
                                     Mulai dengan menambahkan pengguna baru untuk ditampilkan di sini.
                                 </p>
-                                <AddUserFormDialog roles={roles} />
+                                <AddUserForm roles={roles} />
                             </div>
                         </CardContent>
                     ) : (

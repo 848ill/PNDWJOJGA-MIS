@@ -22,8 +22,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
@@ -34,6 +32,7 @@ import {
 } from 'recharts';
 import { DateRangePicker } from '../../../components/ui/date-range-picker';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 // --- TYPE DEFINITIONS TO FIX ALL TYPESCRIPT ERRORS ---
 type ComplaintData = {
@@ -64,17 +63,25 @@ const COLORS = {
 };
 // ---------------------------------------------------------
 
+interface LegendPayload {
+  value: string;
+  color: string;
+}
+
 // Custom Legend Component
-const CustomLegend = ({ payload }: any) => (
-  <div className="flex justify-center space-x-4 mt-4">
-    {payload.map((entry: any, index: any) => (
-      <div key={`item-${index}`} className="flex items-center space-x-2 cursor-pointer">
-        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
-        <span className="text-sm text-gray-600">{entry.value}</span>
-      </div>
-    ))}
-  </div>
-);
+const CustomLegend = ({ payload }: { payload?: LegendPayload[] }) => {
+  if (!payload) return null;
+  return (
+    <div className="flex justify-center space-x-4 mt-4">
+      {payload.map((entry, index) => (
+        <div key={`item-${index}`} className="flex items-center space-x-2 cursor-pointer">
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+          <span className="text-xs text-gray-500">{entry.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 // Skeleton Component for Analytics Page
 function AnalyticsSkeleton() {
@@ -112,7 +119,7 @@ export default function AnalyticsPage() {
   const [mostFrequentCategory, setMostFrequentCategory] = useState<string>('N/A');
   const [busiestDay, setBusiestDay] = useState<string>('N/A');
   const [dominantSentiment, setDominantSentiment] = useState<string>('N/A');
-  const [activeSlice, setActiveSlice] = useState<any>(null);
+  const [activeSlice, setActiveSlice] = useState<{ name: string; value: number; } | null>(null);
 
   const totalComplaintsInPeriod = trendData.reduce((sum, day) => sum + day.count, 0);
   const averageComplaints = trendData.length > 0 ? totalComplaintsInPeriod / trendData.length : 0;
@@ -136,7 +143,7 @@ export default function AnalyticsPage() {
         return;
       }
       
-      const complaints: ComplaintData[] = (data as any[]) || [];
+      const complaints: ComplaintData[] = data || [];
 
       // Process Trend Data
       const dailyCounts = complaints.reduce((acc: Record<string, number>, complaint) => {
@@ -291,15 +298,15 @@ export default function AnalyticsPage() {
                 <YAxis 
                   dataKey="name" 
                   type="category" 
-                  width={120} 
                   stroke="#6b7280" 
                   fontSize={12} 
                   tickLine={false} 
-                  axisLine={false} 
-                  interval={0} 
+                  axisLine={false}
+                  width={120}
+                  interval={0}
                 />
-                <Tooltip
-                  cursor={{fill: 'rgba(239, 246, 255, 0.5)'}}
+                <Tooltip 
+                  cursor={{fill: 'rgba(239, 246, 255, 0.5)'}} 
                   contentStyle={{
                     background: 'rgba(255, 255, 255, 0.8)',
                     backdropFilter: 'blur(5px)',
@@ -307,8 +314,10 @@ export default function AnalyticsPage() {
                     borderRadius: '0.75rem',
                     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
                   }}
+                  labelStyle={{ fontWeight: 'bold', color: '#1f2937' }}
+                  formatter={(value: ValueType) => [`${value}`, 'Total']}
                 />
-                <Bar dataKey="total" name="Total Pengaduan" radius={[0, 4, 4, 0]} fill="url(#colorCategory)">
+                <Bar dataKey="total" fill="url(#colorCategory)" radius={[0, 4, 4, 0]}>
                    <LabelList dataKey="total" position="right" style={{ fill: "#1f2937", fontSize: '12px' }} />
                 </Bar>
               </BarChart>
@@ -317,46 +326,34 @@ export default function AnalyticsPage() {
         </Card>
         <Card variant="glass" className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Distribusi Sentimen</CardTitle>
+            <CardTitle>Analisis Sentimen</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={350}>
               <PieChart>
-                <Pie 
-                  data={sentimentData} 
-                  dataKey="value" 
-                  nameKey="name" 
-                  cx="50%" 
-                  cy="50%" 
-                  innerRadius={70} 
-                  outerRadius={activeSlice ? 105 : 100}
-                  paddingAngle={5}
-                  onMouseEnter={(data) => setActiveSlice(data)}
+                <Pie
+                  data={sentimentData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  innerRadius={80}
+                  outerRadius={110}
+                  fill="#8884d8"
+                  dataKey="value"
+                  onMouseEnter={(_, index) => setActiveSlice(sentimentData[index])}
                   onMouseLeave={() => setActiveSlice(null)}
                 >
-                  {sentimentData.map((entry) => (
-                    <Cell 
-                      key={`cell-${entry.name}`} 
-                      fill={COLORS[entry.name as keyof typeof COLORS] || '#000000'}
-                      style={{ transition: 'all 0.2s ease-in-out' }}
-                    />
+                  {sentimentData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[entry.name as keyof typeof COLORS]} className="focus:outline-none" />
                   ))}
                 </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    backdropFilter: 'blur(5px)',
-                    borderRadius: '0.75rem',
-                    border: '1px solid rgba(230, 230, 230, 0.5)',
-                  }}
-                 />
-                <Legend content={<CustomLegend />} verticalAlign="bottom" />
                 <text x="50%" y="45%" textAnchor="middle" dominantBaseline="middle" className="fill-gray-900 text-3xl font-bold">
                   {activeSlice ? activeSlice.value : totalComplaintsInPeriod}
                 </text>
                 <text x="50%" y="55%" textAnchor="middle" dominantBaseline="middle" className="fill-gray-600 text-sm">
                   {activeSlice ? activeSlice.name : 'Total Pengaduan'}
                 </text>
+                <CustomLegend payload={Object.entries(COLORS).map(([name, color]) => ({ value: name, color }))} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>

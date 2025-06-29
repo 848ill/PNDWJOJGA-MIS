@@ -1,6 +1,8 @@
 // components/shared/Header.tsx
 'use client';
 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,105 +10,86 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
-import { Menu } from "lucide-react"
-import Link from "next/link"
-import { Button } from "../ui/button"
-import { cn } from "@/lib/utils"
-import Sidebar from "./Sidebar" // Assuming Sidebar can be rendered here for mobile
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from './theme-toggle';
+import Sidebar from './Sidebar';
+import { Menu } from 'lucide-react';
+import { User } from "@supabase/supabase-js";
 
 interface HeaderProps {
-  userName: string | null;
-  userRole: string | null;
-  className?: string;
+    user: User | null;
 }
 
-export default function Header({ userName, userRole, className }: HeaderProps) {
-  // We'll reuse the navLinks logic, maybe move it to a shared place later
-  const navLinks = [
-    { name: 'Dashboard', href: '/', roles: ['system_admin', 'it_support', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official', 'executive'] },
-    { name: 'Complaints', href: '/complaints', roles: ['system_admin', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official'] },
-    { name: 'Analytics & Reports', href: '/analytics', roles: ['system_admin', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official', 'executive'] },
-    { name: 'AI Recommendations', href: '/ai-recommendations', roles: ['system_admin', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official', 'executive'] },
-    { name: 'User Management', href: '/user-management', roles: ['system_admin'] },
-    { name: 'IT Support Tools', href: '/it-support', roles: ['system_admin', 'it_support'] },
-    { name: 'Settings', href: '/settings', roles: ['system_admin'] },
-  ];
+export default function Header({ user }: HeaderProps) {
+    const pathname = usePathname();
 
-  return (
-    <header className={cn(
-      "sticky top-0 flex h-16 items-center gap-4 border-b border-white/20 bg-white/60 px-4 backdrop-blur-xl md:px-6 z-40",
-      className
-    )}>
-      <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-        {/* The title can be a link to the dashboard */}
-        <Link
-          href="#"
-          className="flex items-center gap-2 text-lg font-semibold md:text-base"
-        >
-          {/* <LayoutDashboard className="h-6 w-6" /> */}
-          <span className="sr-only">PandawaJogja</span>
-        </Link>
-        {/* Desktop links can go here if needed, or we can keep them in the sidebar only */}
-      </nav>
+    const getTitle = () => {
+        const path = pathname.split('/').pop() || 'dashboard';
+        return path.charAt(0).toUpperCase() + path.slice(1).replace(/-/g, ' ');
+    };
 
-      {/* Mobile Menu using Sheet */}
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="shrink-0 md:hidden"
-          >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <SheetHeader>
-            <SheetTitle className="sr-only">Menu</SheetTitle>
-          </SheetHeader>
-          <Sidebar userRole={userRole} isCollapsed={false} onToggle={() => {}} />
-        </SheetContent>
-      </Sheet>
+    return (
+        <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
+            <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
+                <div className="flex gap-6 md:gap-10">
+                    <Link href="/dashboard" className="hidden items-center space-x-2 md:flex">
+                        {/* <Logo /> You can uncomment this once you have a Logo component */}
+                        <span className="hidden font-bold sm:inline-block">PANDAWA JOGJA</span>
+                    </Link>
+                </div>
 
-      <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <div className="ml-auto flex-1 sm:flex-initial">
-          {/* Optional: Add a search bar or other actions here */}
-        </div>
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/20">
-                <Avatar>
-                  <AvatarImage src="https://i.pravatar.cc/300" alt="@shadcn" />
-                  <AvatarFallback>{userName?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
-                </Avatar>
-                <span className="sr-only">Toggle user menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{userName || 'My Account'}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Link href="/settings" className="w-full">Settings</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-    </header>
-  )
+                <div className="flex flex-1 items-center justify-end space-x-4">
+                    <nav className="flex items-center space-x-1">
+                        <h1 className="text-xl font-semibold hidden md:block">{getTitle()}</h1>
+                        <div className="md:hidden">
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                        <Menu className="h-6 w-6" />
+                                        <span className="sr-only">Buka Menu</span>
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="left">
+                                    <Sidebar userRole={user?.user_metadata.role} isCollapsed={false} onToggle={() => {}} />
+                                </SheetContent>
+                            </Sheet>
+                        </div>
+                        <ThemeToggle />
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="secondary" className="relative h-8 w-8 rounded-full">
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarImage src={user?.user_metadata.avatar_url} alt={user?.email} />
+                                        <AvatarFallback>{user?.email?.[0].toUpperCase()}</AvatarFallback>
+                                    </Avatar>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>{user?.user_metadata.full_name || 'My Account'}</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <Link href="/dashboard/settings">Pengaturan</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <form action="/auth/sign-out" method="post" className="w-full">
+                                        <button type="submit" className="w-full text-left">
+                                            Keluar
+                                        </button>
+                                    </form>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </nav>
+                </div>
+            </div>
+        </header>
+    );
 }
