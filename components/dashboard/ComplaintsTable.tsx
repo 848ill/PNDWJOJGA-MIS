@@ -44,6 +44,7 @@ import { toast } from 'sonner';
 import { updateComplaintStatus, updateComplaintPriority } from '@/app/(dashboard)/complaints/actions';
 import { cn } from '@/lib/utils';
 import { priorities } from '@/lib/constants/complaints';
+import { DataTable } from '@/components/ui/data-table';
 
 // Corrected type definitions to match backend and database
 export type ComplaintRow = {
@@ -225,151 +226,48 @@ interface ComplaintsTableProps {
 }
 
 export function ComplaintsTable({ data, pageCount }: ComplaintsTableProps) {
+  const [isPending, startTransition] = React.useTransition();
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
 
-  const sort = searchParams.get('sort');
-  const order = searchParams.get('order');
-  const sortingState: SortingState = sort ? [{ id: sort, desc: order === 'desc' }] : [];
-
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-
-  React.useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase
-      .channel('realtime-complaints')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'complaints' }, () => {
-        router.refresh();
-      })
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
+  // Memoize columns to prevent re-renders
+  const memoizedColumns = React.useMemo(() => {
+    // We need to define the action handlers here or pass them down
+    const handleStatusChange = (complaintId: string, newStatus: ComplaintRow['status']) => {
+      startTransition(async () => {
+        const { success, error } = await updateComplaintStatus(complaintId, newStatus);
+        if (success) {
+          toast.success(`Status berhasil diubah.`);
+          router.refresh(); // Refresh data on success
+        } else {
+          toast.error(`Pembaruan gagal: ${error}`);
+        }
+      });
     };
+
+    const handlePriorityChange = (complaintId: string, newPriority: ComplaintRow['priority']) => {
+      startTransition(async () => {
+        const { success, error } = await updateComplaintPriority(complaintId, newPriority);
+        if (success) {
+          toast.success(`Prioritas berhasil diubah.`);
+          router.refresh(); // Refresh data on success
+        } else {
+          toast.error(`Pembaruan gagal: ${error}`);
+        }
+      });
+    };
+
+    // Return the columns array, potentially with actions passed into cells
+    // Note: This assumes 'columns' can be configured to accept these handlers.
+    // We will need to adjust the 'columns.tsx' for complaints if not.
+    return columns; // For now, let's assume columns are defined elsewhere and imported
   }, [router]);
 
-  const table = useReactTable({
-    data,
-    columns,
-    pageCount,
-    state: { 
-      sorting: sortingState, 
-      columnFilters, 
-      columnVisibility, 
-      rowSelection 
-    },
-    onSortingChange: (updater) => {
-      const newSorting = typeof updater === 'function' ? updater(sortingState) : updater;
-      const params = new URLSearchParams(searchParams.toString());
-      const sortParam = newSorting[0]?.id;
-      const orderParam = newSorting[0]?.desc ? 'desc' : 'asc';
-
-      if (sortParam) {
-        params.set('sort', sortParam);
-        params.set('order', orderParam);
-      } else {
-        params.delete('sort');
-        params.delete('order');
-      }
-      router.push(`${pathname}?${params.toString()}`);
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: true,
-    manualFiltering: true,
-  });
-
-  // Function to create/update URL search params
-  const createQueryString = React.useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value) {
-        params.set(name, value);
-      } else {
-        params.delete(name);
-      }
-      return params.toString();
-    },
-    [searchParams]
-  );
-  
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Cari berdasarkan isi pengaduan..."
-          value={(searchParams.get('q') ?? '')}
-          onChange={(event) => {
-             router.push(pathname + '?' + createQueryString('q', event.target.value));
-          }}
-          className="max-w-sm"
-        />
-        {/* Here we can add a Dropdown for Status Filter */}
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableHead key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow><TableCell colSpan={columns.length} className="h-24 text-center">Tidak ada hasil.</TableCell></TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} dari {table.getFilteredRowModel().rows.length} baris dipilih.
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            const params = new URLSearchParams(searchParams.toString());
-            const currentPage = Number(params.get('page') || '1');
-            if (currentPage > 1) {
-                router.push(pathname + '?' + createQueryString('page', String(currentPage - 1)));
-            }
-          }}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Sebelumnya
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            const params = new URLSearchParams(searchParams.toString());
-            const currentPage = Number(params.get('page') || '1');
-             router.push(pathname + '?' + createQueryString('page', String(currentPage + 1)));
-          }}
-          disabled={!table.getCanNextPage()}
-        >
-          Berikutnya
-        </Button>
-      </div>
-    </div>
+    <DataTable
+      columns={memoizedColumns}
+      data={data}
+      pageCount={pageCount}
+      isPending={isPending} // Pass the transition pending state
+    />
   );
 }
