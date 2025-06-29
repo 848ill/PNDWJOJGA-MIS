@@ -29,13 +29,13 @@ export default function Sidebar({ userRole, className, isCollapsed, onToggle }: 
   const pathname = usePathname();
 
   const navLinks = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard, roles: ['system_admin', 'it_support', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official', 'executive'] },
-    { name: 'Complaints', href: '/complaints', icon: FileText, roles: ['system_admin', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official'] },
-    { name: 'Analytics & Reports', href: '/analytics', icon: BarChart2, roles: ['system_admin', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official', 'executive'] },
-    { name: 'AI Recommendations', href: '/ai-recommendations', icon: Briefcase, roles: ['system_admin', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official', 'executive'] },
-    { name: 'User Management', href: '/user-management', icon: Users, roles: ['system_admin'] },
-    { name: 'IT Support Tools', href: '/it-support', icon: LifeBuoy, roles: ['system_admin', 'it_support'] },
-    { name: 'Settings', href: '/settings', icon: Settings, roles: ['system_admin'] },
+    { name: 'Dasbor', href: '/', icon: LayoutDashboard, roles: ['system_admin', 'it_support', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official', 'executive'] },
+    { name: 'Pengaduan', href: '/complaints', icon: FileText, roles: ['system_admin', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official'] },
+    { name: 'Analitik & Laporan', href: '/analytics', icon: BarChart2, roles: ['system_admin', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official', 'executive'] },
+    { name: 'Rekomendasi AI', href: '/ai-recommendations', icon: Briefcase, roles: ['system_admin', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official', 'executive'] },
+    { name: 'Manajemen Pengguna', href: '/user-management', icon: Users, roles: ['system_admin'] },
+    { name: 'Alat Dukungan TI', href: '/it-support', icon: LifeBuoy, roles: ['system_admin', 'it_support'] },
+    { name: 'Pengaturan', href: '/settings', icon: Settings, roles: ['system_admin'] },
   ];
 
   return (

@@ -38,7 +38,7 @@ export function EditUserForm({ user, roles, setOpen, onSuccess }: EditUserFormPr
         <form action={formAction} className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="fullName" className="text-right">
-                    Full Name
+                    Nama Lengkap
                 </Label>
                 <Input
                     id="fullName"
@@ -63,12 +63,12 @@ export function EditUserForm({ user, roles, setOpen, onSuccess }: EditUserFormPr
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="roleId" className="text-right">
-                    Role
+                    Peran
                 </Label>
                 <div className="col-span-3">
                     <Select name="roleId" defaultValue={user.role_id || undefined} required>
                         <SelectTrigger>
-                            <SelectValue placeholder="Select a role" />
+                            <SelectValue placeholder="Pilih peran" />
                         </SelectTrigger>
                         <SelectContent className="bg-white">
                             {roles.map((role) => (
@@ -86,7 +86,7 @@ export function EditUserForm({ user, roles, setOpen, onSuccess }: EditUserFormPr
                     className="w-full"
                     style={{ backgroundColor: 'black', color: 'white' }}
                 >
-                    Save changes
+                    Simpan perubahan
                 </Button>
             </div>
         </form>

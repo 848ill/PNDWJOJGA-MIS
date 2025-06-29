@@ -39,18 +39,15 @@ export function AddUserFormDialog({ roles }: AddUserFormDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button 
-                  variant="default" 
-                  style={{ backgroundColor: 'black', color: 'white' }}
-                >
-                  Add New User
+                <Button variant="black">
+                  Tambah Pengguna Baru
                 </Button>
             </DialogTrigger>
             <DialogContent className="bg-white">
                 <DialogHeader>
-                    <DialogTitle>Create a New User</DialogTitle>
+                    <DialogTitle>Buat Pengguna Baru</DialogTitle>
                     <DialogDescription>
-                        Fill out the form below to add a new user to the system.
+                        Isi formulir di bawah ini untuk menambahkan pengguna baru ke sistem.
                     </DialogDescription>
                 </DialogHeader>
                 <AddUserForm roles={roles} onUserAdded={onUserAdded} />
@@ -71,9 +68,9 @@ function SubmitButton() {
             type="submit"
             disabled={pending}
             className="w-full"
-            style={{ backgroundColor: 'black', color: 'white' }}
+            variant="black"
         >
-            {pending ? 'Adding User...' : 'Add User'}
+            {pending ? 'Menambahkan Pengguna...' : 'Tambah Pengguna'}
         </Button>
     );
 }
@@ -106,7 +103,7 @@ export function AddUserForm({ roles, onUserAdded }: AddUserFormProps) {
             <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="fullName" className="text-right">
-                        Full Name
+                        Nama Lengkap
                     </Label>
                     <Input
                         id="fullName"
@@ -129,7 +126,7 @@ export function AddUserForm({ roles, onUserAdded }: AddUserFormProps) {
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="password" className="text-right">
-                        Password
+                        Kata Sandi
                     </Label>
                     <Input
                         id="password"
@@ -141,12 +138,12 @@ export function AddUserForm({ roles, onUserAdded }: AddUserFormProps) {
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="roleId" className="text-right">
-                        Role
+                        Peran
                     </Label>
                     <div className="col-span-3">
                         <Select name="roleId" required>
                             <SelectTrigger>
-                                <SelectValue placeholder="Select a role" />
+                                <SelectValue placeholder="Pilih peran" />
                             </SelectTrigger>
                             <SelectContent
                                 className="bg-white"

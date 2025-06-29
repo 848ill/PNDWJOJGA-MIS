@@ -42,11 +42,11 @@ export default function AiInsightsDisplay({ insights }: AiInsightsDisplayProps) 
     return (
       <Card>
         <CardHeader>
-          <CardTitle>AI Insights & Recommendations</CardTitle>
-          <CardDescription>Intelligent analysis of your complaint data.</CardDescription>
+          <CardTitle>Wawasan & Rekomendasi AI</CardTitle>
+          <CardDescription>Analisis cerdas dari data pengaduan Anda.</CardDescription>
         </CardHeader>
         <CardContent className="h-48 flex items-center justify-center text-muted-foreground">
-          <p>No AI insights available.</p>
+          <p>Tidak ada wawasan AI yang tersedia.</p>
         </CardContent>
       </Card>
     );
@@ -55,8 +55,8 @@ export default function AiInsightsDisplay({ insights }: AiInsightsDisplayProps) 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI Insights & Recommendations</CardTitle>
-        <CardDescription>Intelligent analysis of your complaint data.</CardDescription>
+        <CardTitle>Wawasan & Rekomendasi AI</CardTitle>
+        <CardDescription>Analisis cerdas dari data pengaduan Anda.</CardDescription>
       </CardHeader>
       <CardContent>
         <Accordion type="single" collapsible className="w-full">
@@ -65,7 +65,7 @@ export default function AiInsightsDisplay({ insights }: AiInsightsDisplayProps) 
               <AccordionTrigger>
                 <div className="flex justify-between items-center w-full">
                   <span className="font-medium text-left truncate pr-4">
-                    {insight.mainTopic || 'General Insight'}
+                    {insight.mainTopic || 'Wawasan Umum'}
                   </span>
                   <div className="flex items-center gap-2 shrink-0">
                     {insight.categoryName && <Badge variant="outline">{insight.categoryName}</Badge>}
@@ -80,16 +80,16 @@ export default function AiInsightsDisplay({ insights }: AiInsightsDisplayProps) 
               <AccordionContent>
                 <div className="space-y-3 text-sm">
                   {insight.summary && (
-                    <p><strong className="font-semibold">Summary:</strong> {insight.summary}</p>
+                    <p><strong className="font-semibold">Ringkasan:</strong> {insight.summary}</p>
                   )}
                   {insight.advice && (
-                    <p><strong className="font-semibold">Advice:</strong> {insight.advice}</p>
+                    <p><strong className="font-semibold">Saran:</strong> {insight.advice}</p>
                   )}
                   {insight.whatToDo && (
-                    <p><strong className="font-semibold">Action:</strong> {insight.whatToDo}</p>
+                    <p><strong className="font-semibold">Tindakan:</strong> {insight.whatToDo}</p>
                   )}
                   {!insight.summary && !insight.advice && !insight.whatToDo && (
-                    <p className="italic">No detailed analysis available.</p>
+                    <p className="italic">Tidak ada analisis detail yang tersedia.</p>
                   )}
                 </div>
               </AccordionContent>

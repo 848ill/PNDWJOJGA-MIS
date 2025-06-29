@@ -12,8 +12,8 @@ export default function ComplaintChart({ dailyCounts }: ComplaintChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Complaints Trend</CardTitle>
-        <CardDescription>Number of complaints over the last 7 days.</CardDescription>
+        <CardTitle>Tren Pengaduan</CardTitle>
+        <CardDescription>Jumlah pengaduan selama 7 hari terakhir.</CardDescription>
       </CardHeader>
       <CardContent className="h-[250px] p-2">
         <ResponsiveContainer width="100%" height="100%">
@@ -33,7 +33,7 @@ export default function ComplaintChart({ dailyCounts }: ComplaintChartProps) {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              tickFormatter={(value) => new Date(value).toLocaleDateString('id-ID', { month: 'short', day: 'numeric' })}
             />
             <YAxis
               stroke="#888888"

@@ -70,14 +70,18 @@ async function main() {
             east: 110.84,
             west: 110.0,
         };
+        const latitude = faker.location.latitude({ min: diyBounds.south, max: diyBounds.north });
+        const longitude = faker.location.longitude({ min: diyBounds.west, max: diyBounds.east });
         newComplaints.push({
-            user_id: randomUser.id,
             category_id: randomCategory.id,
             text_content: faker.lorem.sentence(),
             sentiment: faker.helpers.arrayElement(['Positive', 'Negative', 'Neutral']),
-            location: `POINT(${faker.location.longitude({ min: diyBounds.west, max: diyBounds.east })} ${faker.location.latitude({ min: diyBounds.south, max: diyBounds.north })})`,
-            // FIX: Convert the Date object to an ISO string, which the database expects.
-            submitted_at: faker.date.past().toISOString(),
+            status: faker.helpers.arrayElement(['open', 'in progress']),
+            priority: faker.helpers.arrayElement(['low', 'medium', 'high']),
+            latitude: latitude,
+            longitude: longitude,
+            // FIX: Use recent dates to make the data relevant for "this week" queries.
+            submitted_at: faker.date.recent({ days: 10 }).toISOString(),
         });
     }
   }

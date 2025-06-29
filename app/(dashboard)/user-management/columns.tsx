@@ -41,7 +41,7 @@ import { EditUserForm } from './edit-user-form';
 export const getColumns = (roles: Role[]): ColumnDef<UserRow>[] => [
     {
         accessorKey: 'full_name',
-        header: 'Full Name',
+        header: 'Nama Lengkap',
     },
     {
         accessorKey: 'email',
@@ -49,7 +49,7 @@ export const getColumns = (roles: Role[]): ColumnDef<UserRow>[] => [
     },
     {
         accessorKey: 'role_name',
-        header: 'Role',
+        header: 'Peran',
     },
     {
         id: 'actions',
@@ -68,9 +68,9 @@ export const getColumns = (roles: Role[]): ColumnDef<UserRow>[] => [
                     <Dialog open={editOpen} onOpenChange={setEditOpen}>
                         <DialogContent className="sm:max-w-[425px] bg-white">
                             <DialogHeader>
-                                <DialogTitle>Edit user</DialogTitle>
+                                <DialogTitle>Ubah pengguna</DialogTitle>
                                 <DialogDescription>
-                                    Make changes to the user profile here. Click save when you're done.
+                                    Lakukan perubahan pada profil pengguna di sini. Klik simpan jika sudah selesai.
                                 </DialogDescription>
                             </DialogHeader>
                             <EditUserForm user={user} roles={roles} setOpen={setEditOpen} onSuccess={handleSuccess} />
@@ -80,18 +80,18 @@ export const getColumns = (roles: Role[]): ColumnDef<UserRow>[] => [
                     <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
                         <AlertDialogContent className="bg-white">
                             <AlertDialogHeader>
-                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogTitle>Apakah Anda benar-benar yakin?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the user{' '}
-                                    <span className="font-semibold">{user.full_name}</span> and remove their data from our servers.
+                                    Tindakan ini tidak bisa dibatalkan. Ini akan menghapus pengguna secara permanen{' '}
+                                    <span className="font-semibold">{user.full_name}</span> dan menghapus data mereka dari server kami.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogCancel>Batal</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={async () => {
                                         toast.promise(deleteUser(user.id), {
-                                            loading: 'Deleting user...',
+                                            loading: 'Menghapus pengguna...',
                                             success: (result) => {
                                                 handleSuccess();
                                                 return result.message;
@@ -101,7 +101,7 @@ export const getColumns = (roles: Role[]): ColumnDef<UserRow>[] => [
                                     }}
                                     style={{ backgroundColor: 'hsl(var(--destructive))', color: 'hsl(var(--destructive-foreground))' }}
                                 >
-                                    Continue
+                                    Lanjutkan
                                 </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
@@ -113,20 +113,20 @@ export const getColumns = (roles: Role[]): ColumnDef<UserRow>[] => [
                                 variant="ghost"
                                 className="h-8 w-8 p-0 transition-all hover:scale-110 active:scale-95"
                             >
-                                <span className="sr-only">Open menu</span>
+                                <span className="sr-only">Buka menu</span>
                                 <DotsHorizontalIcon className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-white">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => setEditOpen(true)}>
-                                Edit
+                                Ubah
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => setDeleteOpen(true)}
                                 className="text-red-600"
                             >
-                                Delete
+                                Hapus
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

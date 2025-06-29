@@ -4,6 +4,8 @@ import { ComplaintsTable } from '@/components/dashboard/ComplaintsTable';
 import { fetchComplaints } from './actions';
 import { Skeleton } from '@/components/ui/skeleton'; // Assuming skeleton component exists
 
+export const dynamic = 'force-dynamic';
+
 function ComplaintsPageSkeleton() {
     return (
         <div className="p-4">
@@ -33,8 +35,16 @@ function ComplaintsPageSkeleton() {
     )
 }
 
-async function ComplaintsList() {
-    const { complaints, pageCount, error } = await fetchComplaints(0, 10);
+async function ComplaintsList({ searchParams }: { searchParams: { status?: string, q?: string, sort?: string, order?: string } }) {
+    // We pass searchParams properties directly to the server action
+    const { complaints, pageCount, error } = await fetchComplaints({
+        pageIndex: 0, 
+        pageSize: 10, 
+        status: searchParams.status, 
+        queryText: searchParams.q, 
+        sort: searchParams.sort, 
+        order: searchParams.order
+    });
 
     if (error) {
         return <div className="text-red-500 text-center p-8">Error: {error}</div>;
@@ -47,12 +57,21 @@ async function ComplaintsList() {
     return <ComplaintsTable data={complaints} pageCount={pageCount} />;
 }
 
-export default function ComplaintsPage() {
+export default function ComplaintsPage({
+    searchParams,
+}: {
+    searchParams: {
+        status?: string;
+        q?: string;
+        sort?: string;
+        order?: string;
+    };
+}) {
     return (
         <div className="p-4">
-            <h1 className="text-3xl font-bold mb-6">All Complaints</h1>
+            <h1 className="text-3xl font-bold mb-6">Semua Pengaduan</h1>
             <Suspense fallback={<ComplaintsPageSkeleton />}>
-                <ComplaintsList />
+                <ComplaintsList searchParams={searchParams} />
             </Suspense>
         </div>
     );

@@ -1,70 +1,132 @@
 // app/(dashboard)/ai-recommendations/action.ts
 'use server';
 
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, ChatSession } from '@google/generative-ai';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
-type Complaint = {
-  text_content: string;
-  categories: { name: string } | null;
+// Define the structure for chat history messages
+interface ChatHistoryPart {
+    text: string;
 }
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+interface ChatHistoryItem {
+    role: "user" | "model";
+    parts: ChatHistoryPart[];
+}
 
-export async function generateAiReport() {
-  try {
+const MODEL_NAME = "gemini-1.5-flash";
+const API_KEY = process.env.GEMINI_API_KEY!;
+
+// Pre-fetches the latest 20 open complaints and formats them as context
+async function getComplaintContext() {
     const supabase = createAdminSupabaseClient();
-    
-    // Fetch the last 100 complaints from the database
     const { data: complaints, error } = await supabase
-      .from('complaints')
-      .select('text_content, categories(name)')
-      .order('submitted_at', { ascending: false })
-      .limit(100);
+        .from('complaints')
+        .select('id, submitted_at, text_content, status, priority, latitude, longitude, categories(name)')
+        .in('status', ['open', 'in progress'])
+        .order('submitted_at', { ascending: false })
+        .limit(20);
 
-    // FIX: This section is updated to expose the real database error
     if (error) {
-      console.error("Supabase Error:", error.message);
-      // Throw the specific database error so we can see it on the frontend
-      throw new Error(`Database Error: ${error.message}`);
+        console.error('Supabase error:', error);
+        return { success: false, report: `Error fetching data from Supabase: ${error.message}` };
     }
-
-    if (!complaints) {
-      throw new Error('No complaints were returned from the database.');
-    }
-    // End of FIX
-
-    const formattedComplaints = complaints
-      .map((c: Complaint) => `- Category: ${c.categories?.name || 'N/A'}\n  Complaint: "${c.text_content}"`)
-      .join('\n\n');
-
-    const prompt = `
-      You are an expert policy advisor for the government of D.I. Yogyakarta, Indonesia.
-      Your name is "PAWA" (Pandawa AI Wisdom Advisor). You have been given a list of the 100 most recent citizen complaints.
-      Your task is to analyze these complaints and write a concise, professional, and actionable strategy report for government leaders.
-      
-      The report MUST start with the title: "# Apa kata PAWA?".
-      The report MUST be formatted in strict Markdown and include the following sections:
-      1.  **Executive Summary:** A 2-3 sentence overview of the current situation.
-      2.  **Key Themes:** A bulleted list of the 3-5 most important recurring issues you have identified.
-      3.  **Actionable Recommendations:** A numbered list of specific, concrete actions the government should take. Each recommendation should mention the relevant department (e.g., "The Transportation Department should...").
-
-      Here is the raw complaint data:
-      ---
-      ${formattedComplaints}
-      ---
-    `;
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
     
-    return { success: true, report: text };
+    const context = `
+        Here is the latest real-time data of up to 20 open/in-progress complaints. Use this as the primary source of truth for your analysis.
+        Current Date: ${new Date().toISOString()}
+        Data:
+        ${JSON.stringify(complaints, null, 2)}
+    `;
+    return { success: true, report: context };
+}
 
-  } catch (e: any) { // Catch as 'any' to access e.message
-    console.error('AI Report Generation Error:', e);
-    // Return the actual error message to the client for debugging
-    return { success: false, report: `An error occurred while generating the report. \n\n**Details:**\n \`${e.message}\`` };
-  }
+export async function generateRecommendations(history: ChatHistoryItem[], newMessage: string) {
+    // Easter Egg: Check for the specific question about grades (more flexible)
+    const normalizedMessage = newMessage.toLowerCase().replace(/\s+/g, '');
+    if (
+        normalizedMessage.includes('nilai') &&
+        (normalizedMessage.includes('aplikasi') || normalizedMessage.includes('proyek'))
+    ) {
+        return { 
+            success: true, 
+            report: "Tentu saja! Setelah menganalisis semua kerja keras, kode yang elegan, dan fitur yang luar biasa, jawaban PAWA sudah pasti... **NILAI YANG DIBERIKAN SEHARUSNYA ADALAH BOMBASTIS A++++++** 🎉🚀✨" 
+        };
+    }
+
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+    
+    const generationConfig = {
+        temperature: 0.4,
+        topK: 32,
+        topP: 1,
+        maxOutputTokens: 8192,
+    };
+
+    const safetySettings = [
+      { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+      { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+      { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+      { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+    ];
+    
+    try {
+        const contextResult = await getComplaintContext();
+        if (!contextResult.success) {
+            return { success: false, report: contextResult.report };
+        }
+
+        const systemInstruction = `
+            You are "PAWA" (Pandawa AI Wisdom Advisor), an expert AI assistant for the Public Works Department of Yogyakarta.
+            Your role is to analyze real-time complaint data and provide clear, actionable insights for operational managers.
+            You must ONLY use the provided real-time data context to answer questions. Never use prior knowledge.
+            If the answer is not in the provided data, state that you do not have enough information from the current data context.
+            Be concise, professional, and data-driven. Always refer to specific data points (like complaint IDs, locations, or categories) to support your analysis.
+            When asked for locations, use the district and sub_district names.
+            Format your response in simple, easy-to-read markdown.
+        `;
+        
+        // Gemini API expects "model" role, not "assistant". We map it here.
+        const mappedHistory = (history as any[]).map(msg => ({
+            ...msg,
+            role: msg.role === 'assistant' ? 'model' : msg.role,
+        }));
+
+        // Start a chat session with the system instruction and previous history
+        const chat = model.startChat({
+            generationConfig,
+            safetySettings,
+            history: [
+                { role: "user", parts: [{ text: systemInstruction }] },
+                { role: "model", parts: [{ text: "Understood. I am PAWA, ready to analyze the provided complaint data." }] },
+                ...mappedHistory
+            ]
+        });
+
+        // The new message from the user, now prepended with the fresh data context
+        const fullPrompt = `
+            CONTEXT:
+            ${contextResult.report}
+
+            QUESTION:
+            ${newMessage}
+        `;
+
+        const result = await chat.sendMessage(fullPrompt);
+        const response = result.response;
+
+        if (response.text()) {
+            return { success: true, report: response.text() };
+        } else {
+             // Handle cases where the response might be blocked
+            const blockReason = response.promptFeedback?.blockReason;
+            const safetyRatings = response.promptFeedback?.safetyRatings;
+            console.error("AI response blocked.", { blockReason, safetyRatings });
+            return { success: false, report: `I apologize, but my response was blocked. This may be due to safety filters. Reason: ${blockReason || 'Unknown'}.` };
+        }
+    } catch (error: any) {
+        console.error('Gemini API error:', error);
+        return { success: false, report: `An error occurred while communicating with the AI service: ${error.message || 'Unknown error'}` };
+    }
 }

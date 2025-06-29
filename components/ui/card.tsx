@@ -81,6 +81,20 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+function CardSkeleton() {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="h-4 w-2/3 rounded-md bg-muted animate-pulse" />
+        <div className="h-4 w-4 rounded-full bg-muted animate-pulse" />
+      </CardHeader>
+      <CardContent>
+        <div className="h-8 w-1/3 rounded-md bg-muted animate-pulse" />
+      </CardContent>
+    </Card>
+  )
+}
+
 export {
   Card,
   CardHeader,
@@ -89,4 +103,5 @@ export {
   CardAction,
   CardDescription,
   CardContent,
+  CardSkeleton,
 }

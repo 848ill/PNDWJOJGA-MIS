@@ -1,87 +1,145 @@
 // app/(dashboard)/ai-recommendations/page.tsx
 'use client';
 
-import { useState } from 'react';
-import { Button } from '../../../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
-import { generateAiReport } from './action';
+import { useState, useRef, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { generateRecommendations } from './action';
 import ReactMarkdown from 'react-markdown';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, Send, User, Bot } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { cn } from '@/lib/utils';
+
+
+// Define the structure of a chat message
+interface Message {
+  role: 'user' | 'model';
+  content: string;
+}
 
 export default function AiRecommendationsPage() {
-  const [report, setReport] = useState<string>('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const handleGenerateReport = async () => {
-    setLoading(true);
-    setReport('');
-    
-    const result = await generateAiReport();
-
-    if (result.success) {
-      setReport(result.report);
-    } else {
-      setReport(result.report);
+  // Automatically scroll to the bottom when new messages are added
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-    setLoading(false);
+  }, [messages]);
+  
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || loading) return;
+
+    const userMessage: Message = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setLoading(true);
+
+    try {
+      const history = messages.map(msg => ({
+        role: msg.role,
+        parts: [{ text: msg.content }]
+      }));
+      
+      const result = await generateRecommendations(history, userMessage.content);
+
+      if (result.success && result.report) {
+        const assistantMessage: Message = { role: 'model', content: result.report };
+        setMessages(prev => [...prev, assistantMessage]);
+      } else {
+        const errorMessage: Message = { role: 'model', content: result.report || 'Maaf, terjadi sebuah kesalahan.' };
+        setMessages(prev => [...prev, errorMessage]);
+      }
+    } catch (error) {
+      const errorMessage: Message = { role: 'model', content: 'Terjadi kesalahan yang tidak terduga.' };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // FIX: Custom components with improved styling for better contrast and readability.
-  const markdownComponents = {
-    h1: ({node, ...props}: any) => <h1 className="text-3xl font-bold mb-6 text-foreground" {...props} />,
-    h2: ({node, ...props}: any) => <h2 className="text-xl font-semibold border-b pb-2 mt-8 mb-4 text-foreground" {...props} />,
-    h3: ({node, ...props}: any) => <h3 className="text-lg font-semibold mt-6 mb-3 text-foreground" {...props} />,
-    ul: ({node, ...props}: any) => <ul className="list-none space-y-4 pl-2" {...props} />,
-    li: ({node, ...props}: any) => (
-      <li className="flex items-start">
-        <ArrowRight className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
-        {/* FIX: Set body text color to muted-foreground for better hierarchy */}
-        <span className="flex-1 text-muted-foreground">{props.children}</span>
-      </li>
-    ),
-    // FIX: All paragraph text will now use the standard muted foreground color
-    p: ({node, ...props}: any) => <p className="leading-7 text-muted-foreground [&:not(:first-child)]:mt-4" {...props} />,
-    strong: ({node, ...props}: any) => <strong className="font-semibold text-foreground" {...props} />,
+  const markdownComponents: { [key: string]: React.FC<any> } = {
+    p: ({ node, ...props }) => <p className="leading-7 [&:not(:first-child)]:mt-2" {...props} />,
+    ul: ({ node, ...props }) => <ul className="list-disc space-y-2 pl-5" {...props} />,
+    ol: ({ node, ...props }) => <ol className="list-decimal space-y-2 pl-5" {...props} />,
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">AI Strategy Recommendations</h1>
-        <Button onClick={handleGenerateReport} disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            'Generate New Report'
-          )}
-        </Button>
-      </div>
+    <div className="flex flex-col h-[calc(100vh-4rem)]">
+        <header className="p-4 border-b">
+            <h1 className="text-xl font-bold">PAWA - Pandawa AI Wisdom Advisor</h1>
+            <p className="text-sm text-muted-foreground">Penasihat interaktif Anda untuk analisis data pengaduan.</p>
+        </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>AI Generated Report</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading && <p className="text-center text-muted-foreground">The AI is analyzing data, this may take a moment...</p>}
+        <div ref={scrollAreaRef} className="flex-1 overflow-y-auto p-4 space-y-6">
+            {messages.length === 0 ? (
+                <div className="text-center text-muted-foreground pt-10">
+                    <Bot className="mx-auto h-12 w-12" />
+                    <p className="mt-4">Tanyakan apa saja tentang data pengaduan.</p>
+                    <p className="text-sm">contoh: "Apa 3 pengaduan teratas minggu ini?"</p>
+                </div>
+            ) : (
+                messages.map((msg, index) => (
+                <div key={index} className={cn("flex items-start gap-4", msg.role === 'user' ? 'justify-end' : 'justify-start')}>
+                    {msg.role === 'model' && (
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback>AI</AvatarFallback>
+                        </Avatar>
+                    )}
+                    <div className={cn("max-w-xl rounded-lg p-3 text-sm", 
+                        msg.role === 'user' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-muted'
+                    )}>
+                        <ReactMarkdown components={markdownComponents}>{msg.content}</ReactMarkdown>
+                    </div>
+                    {msg.role === 'user' && (
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback>U</AvatarFallback>
+                        </Avatar>
+                    )}
+                </div>
+                ))
+            )}
+            {loading && (
+                <div className="flex items-start gap-4 justify-start">
+                     <Avatar className="h-8 w-8">
+                        <AvatarFallback>AI</AvatarFallback>
+                    </Avatar>
+                    <div className="bg-muted max-w-xl rounded-lg p-3 text-sm flex items-center">
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        <span>Sedang berpikir...</span>
+                    </div>
+                </div>
+            )}
+        </div>
 
-          {!loading && !report && (
-            <div className="text-center text-muted-foreground py-10">
-              <p>Click "Generate New Report" to get started.</p>
-              <p className="text-sm">The AI will analyze the latest 100 complaints and provide strategic advice.</p>
-            </div>
-          )}
-
-          {report && (
-            // FIX: Removed the generic 'prose' class to allow our custom styles to take full control.
-            <div className="max-w-none">
-              <ReactMarkdown components={markdownComponents}>{report}</ReactMarkdown>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        <div className="p-4 border-t">
+            <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                <Textarea
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Tanyakan tentang pengaduan prioritas tinggi, tema berulang, dll."
+                    className="flex-1 resize-none"
+                    rows={1}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendMessage(e);
+                        }
+                    }}
+                />
+                <Button type="submit" disabled={loading || !input.trim()}>
+                    <Send className="h-4 w-4" />
+                    <span className="sr-only">Kirim</span>
+                </Button>
+            </form>
+        </div>
     </div>
   );
 }

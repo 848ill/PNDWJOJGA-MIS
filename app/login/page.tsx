@@ -42,9 +42,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
       <Card className="w-full max-w-sm">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Login to MIS</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Masuk ke SIM</CardTitle>
           <CardDescription className="text-center">
-            Enter your email and password to access the dashboard.
+            Masukkan email dan kata sandi Anda untuk mengakses dasbor.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -62,7 +62,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Kata Sandi</Label>
               <Input
                 id="password"
                 type="password"
@@ -77,7 +77,7 @@ export default function LoginPage() {
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'Sedang masuk...' : 'Masuk'}
             </Button>
           </form>
         </CardContent>

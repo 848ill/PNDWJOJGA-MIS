@@ -14,9 +14,9 @@ export default async function UserManagementPage() {
         <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
             <div className="flex items-center justify-between space-y-2">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">User Management</h2>
+                    <h2 className="text-2xl font-bold tracking-tight">Manajemen Pengguna</h2>
                     <p className="text-muted-foreground">
-                        Here&apos;s a list of all the users in the system.
+                        Berikut adalah daftar semua pengguna dalam sistem.
                     </p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -39,9 +39,9 @@ async function UserManagementTableWrapper() {
         return (
             <div className="flex h-[50vh] flex-col items-center justify-center rounded-md border border-dashed">
                 <UsersIcon className="h-16 w-16 text-muted-foreground" />
-                <h3 className="mt-4 text-lg font-semibold">No Users Found</h3>
+                <h3 className="mt-4 text-lg font-semibold">Tidak Ada Pengguna Ditemukan</h3>
                 <p className="mb-4 mt-2 text-sm text-muted-foreground">
-                    You have not added any users yet. Get started by adding one.
+                    Anda belum menambahkan pengguna. Mulai dengan menambahkan satu.
                 </p>
                 <AddUserFormDialog roles={roles} />
             </div>
