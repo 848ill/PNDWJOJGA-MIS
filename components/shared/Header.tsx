@@ -15,17 +15,13 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { ThemeToggle } from './theme-toggle';
 import { Button } from '../ui/button';
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 interface HeaderProps {
     user: User | null;
-    isCollapsed: boolean;
-    onToggle: () => void;
 }
 
-export default function Header({ user, isCollapsed, onToggle }: HeaderProps) {
+export default function Header({ user }: HeaderProps) {
     const router = useRouter();
     const supabase = createClient();
 
