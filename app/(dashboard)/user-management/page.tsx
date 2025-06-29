@@ -2,7 +2,7 @@
 
 import { AddUserForm } from './add-user-form';
 import { UserManagementTable } from '@/components/dashboard/UserManagementTable';
-import { fetchUsers } from './actions';
+import { fetchUsers, revalidateUserManagement } from './actions';
 import { UsersIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { MotionDiv } from '@/components/shared/MotionDiv';
@@ -15,7 +15,9 @@ export default async function UserManagementPage({
     limit?: string;
   };
 }) {
-    const { users, roles, pageCount } = await fetchUsers(searchParams ?? {});
+    const page = searchParams?.page ?? '1';
+    const limit = searchParams?.limit ?? '10';
+    const { users, roles, pageCount } = await fetchUsers({ page, limit });
 
     const variants = {
         hidden: { opacity: 0, y: 20 },
@@ -58,7 +60,7 @@ export default async function UserManagementPage({
                         </CardContent>
                     ) : (
                         <CardContent className="p-6 pt-0">
-                            <UserManagementTable users={users} roles={roles} pageCount={pageCount} />
+                            <UserManagementTable users={users} roles={roles} pageCount={pageCount} onUserChanged={revalidateUserManagement} />
                         </CardContent>
                     )}
                 </Card>

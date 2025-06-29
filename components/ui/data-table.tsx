@@ -103,8 +103,8 @@ export function DataTable<TData, TValue>({
                         {isPending ? (
                             Array.from({ length: 5 }).map((_, i) => (
                                 <TableRow key={i}>
-                                    {columns.map((column) => (
-                                        <TableCell key={(column as any).id || i}>
+                                    {columns.map((column, idx) => (
+                                        <TableCell key={`skeleton-cell-${idx}`}>
                                             <Skeleton className="h-6 w-full" />
                                         </TableCell>
                                     ))}

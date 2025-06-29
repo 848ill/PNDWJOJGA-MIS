@@ -139,3 +139,7 @@ export async function deleteUser(userId: string): Promise<{ success: boolean; me
     return { success: false, message: errorMessage };
   }
 }
+
+export async function revalidateUserManagement() {
+  revalidatePath('/user-management');
+}

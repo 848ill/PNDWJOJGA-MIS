@@ -7,6 +7,7 @@ import { AiInsightsDisplay } from '@/components/dashboard/AiInsightsDisplay';
 import { Activity, Users, LineChartIcon, BrainCircuitIcon } from 'lucide-react';
 import DashboardMapWrapper from '@/components/dashboard/DashboardMapWrapper';
 import { MapPlaceholder } from '@/components/dashboard/MapPlaceholder';
+import { ComplaintRow } from '@/components/dashboard/ComplaintsTable';
 
 // --- Data Fetching Functions (Server-Side) ---
 
@@ -41,52 +42,53 @@ async function getRecentComplaintData() {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const { data, error } = await supabase
         .from('complaints')
-        .select('id, submitted_at, category_id, categories(name), latitude, longitude, main_topic, sentiment, ai_summary, ai_advice, ai_what_to_do')
+        .select('id, submitted_at, category_id, categories(name), latitude, longitude, main_topic, sentiment, ai_summary, ai_advice, ai_what_to_do, text_content, status, priority')
         .gte('submitted_at', sevenDaysAgo.toISOString())
         .order('submitted_at', { ascending: true });
     
     if (error) {
         console.error('Error fetching recent complaint details:', error);
-        return { dailyCounts: [], complaintLocations: [], aiInsights: [] };
+        return { complaintsData: [], complaints: [], aiInsights: [] };
     }
     
-    const countsMap = new Map<string, number>();
-    (data || []).forEach((complaint) => {
-      const date = new Date(complaint.submitted_at).toISOString().split('T')[0];
-      countsMap.set(date, (countsMap.get(date) || 0) + 1);
-    });
-    const dailyCounts = Array.from(countsMap.entries())
-      .map(([date, count]) => ({ date, count }))
-      .sort((a, b) => a.date.localeCompare(b.date));
-
-    const complaintLocations = (data || [])
+    const complaintsData: ComplaintRow[] = (data || []).map(c => ({
+        id: String(c.id),
+        text_content: c.text_content || '',
+        category_id: String(c.category_id),
+        status: (c.status as ComplaintRow['status']) ?? 'open',
+        priority: (c.priority as ComplaintRow['priority']) ?? 'medium',
+        submitted_at: c.submitted_at,
+        category_name: c.categories?.[0]?.name ?? 'N/A',
+    }));
+    
+    const complaints = (data || [])
       .map((c) => {
         if (c.latitude !== null && c.longitude !== null) {
           return { 
-            lat: c.latitude, 
-            lng: c.longitude,
-            id: c.id,
+            latitude: c.latitude, 
+            longitude: c.longitude,
+            id: String(c.id),
             category: c.categories?.[0]?.name ?? 'Belum Dikategorikan',
-            summary: c.ai_summary ?? 'Tidak ada ringkasan',
           };
         }
         return null;
       })
-      .filter((l): l is { lat: number; lng: number; id: string; category: string; summary: string; } => l !== null);
+      .filter((l): l is { latitude: number; longitude: number; id: string; category: string; } => l !== null);
       
     const aiInsights = (data || [])
       .filter(c => c.main_topic || c.ai_summary)
       .map((c) => ({
-          id: c.id,
+          id: String(c.id),
           mainTopic: c.main_topic,
           summary: c.ai_summary,
           advice: c.ai_advice,
           whatToDo: c.ai_what_to_do,
           sentiment: c.sentiment,
           categoryName: c.categories?.[0]?.name,
+          title: c.main_topic || 'Wawasan AI',
       }));
 
-    return { dailyCounts, complaintLocations, aiInsights };
+    return { complaintsData, complaints, aiInsights };
 }
 
 // --- Wrapper Components with Suspense ---
@@ -122,18 +124,18 @@ async function WeeklyComplaintsCard() {
 }
 
 async function MainDashboardContent() {
-    const { dailyCounts, complaintLocations, aiInsights } = await getRecentComplaintData();
+    const { complaintsData, complaints, aiInsights } = await getRecentComplaintData();
     return (
         <>
             <Suspense fallback={<Card variant="glass"><CardContent className="h-[460px]"><MapPlaceholder /></CardContent></Card>}>
-                <DashboardMapWrapper complaintLocations={complaintLocations} />
+                <DashboardMapWrapper complaints={complaints} />
             </Suspense>
             <Card variant="glass" className="animate-fade-in-up [animation-delay:300ms]">
                 <CardHeader>
                     <CardTitle className="flex items-center text-gray-800"><LineChartIcon className="mr-2 h-5 w-5" /> Pengaduan 7 Hari Terakhir</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <ComplaintChart dailyCounts={dailyCounts} />
+                    <ComplaintChart complaints={complaintsData} />
                 </CardContent>
             </Card>
             <Card variant="glass" className="animate-fade-in-up [animation-delay:400ms]">
@@ -142,7 +144,7 @@ async function MainDashboardContent() {
                     <CardDescription>Analisis cerdas dari data pengaduan Anda.</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[400px] overflow-y-auto">
-                    <AiInsightsDisplay insights={aiInsights} />
+                    <AiInsightsDisplay insights={aiInsights} isLoading={false} />
                 </CardContent>
             </Card>
         </>

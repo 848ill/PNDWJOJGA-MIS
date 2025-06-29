@@ -1,13 +1,12 @@
 'use client';
 
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import { LatLngExpression, Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
 import { useEffect, useRef } from 'react';
-import L from 'leaflet';
+import * as L from 'leaflet';
 
-const customIcon = new Icon({
+const customIcon = new L.Icon({
     iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
@@ -23,7 +22,7 @@ interface ComplaintMapProps {
         longitude: number;
         category?: string;
     }[];
-    center: LatLngExpression;
+    center: L.LatLngExpression;
     zoom: number;
 }
 
@@ -36,13 +35,13 @@ const HeatmapLayer = ({ complaints }: { complaints: ComplaintMapProps['complaint
 
         const points = complaints
             .filter(c => c.latitude && c.longitude)
-            .map(c => [c.latitude, c.longitude, 0.5]); 
+            .map(c => [c.latitude, c.longitude, 0.5] as [number, number, number]); 
 
         if (heatLayerRef.current) {
             map.removeLayer(heatLayerRef.current);
         }
 
-        heatLayerRef.current = (L as any).heatLayer(points, { 
+        heatLayerRef.current = L.heatLayer(points, { 
             radius: 25,
             blur: 15,
             maxZoom: 18,

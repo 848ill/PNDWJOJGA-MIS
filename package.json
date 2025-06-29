@@ -61,7 +61,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/react-leaflet": "^2.8.3",
     "autoprefixer": "^10.4.21",
     "dotenv": "^16.5.0",
     "dotenv-cli": "^8.0.0",

@@ -9,18 +9,23 @@ const ComplaintMap = dynamic(() => import('@/components/dashboard/ComplaintMap')
   loading: () => <div className="h-full w-full bg-muted animate-pulse rounded-lg" />,
 });
 
-interface ComplaintMapProps {
-  complaintLocations: { 
-    lat: number; 
-    lng: number;
+interface DashboardMapProps {
+  complaints: {
     id: string;
-    category: string;
-    summary: string;
-    intensity?: number;
+    latitude: number;
+    longitude: number;
+    category?: string;
   }[];
 }
 
-export default function DashboardMapWrapper({ complaintLocations }: ComplaintMapProps) {
+export default function DashboardMapWrapper({ complaints }: DashboardMapProps) {
+  // Default center and zoom
+  const defaultCenter: [number, number] = [-7.7956, 110.3695]; // Yogyakarta coordinates
+  const defaultZoom = 12;
+
+  // Add a fallback for the complaints prop
+  const validComplaints = Array.isArray(complaints) ? complaints : [];
+
   return (
     <Card className="lg:col-span-2" variant="glass">
       <CardHeader>
@@ -30,7 +35,11 @@ export default function DashboardMapWrapper({ complaintLocations }: ComplaintMap
         <CardDescription>Distribusi geospasial dari pengaduan terkini.</CardDescription>
       </CardHeader>
       <CardContent className="h-[400px] w-full p-0">
-        <ComplaintMap complaintLocations={complaintLocations} />
+        <ComplaintMap 
+          complaints={validComplaints} 
+          center={defaultCenter} 
+          zoom={defaultZoom} 
+        />
       </CardContent>
     </Card>
   );

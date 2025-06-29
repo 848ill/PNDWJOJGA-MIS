@@ -3,6 +3,11 @@
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { type ComplaintRow } from '@/components/dashboard/ComplaintsTable';
 import { revalidatePath } from 'next/cache';
+import type { Database } from '@/lib/types/supabase';
+
+type ComplaintWithCategory = Database['public']['Views']['complaints_with_priority_rank']['Row'] & {
+  categories: { name: string } | null;
+};
 
 interface FetchComplaintsParams {
   pageIndex: number;
@@ -36,7 +41,7 @@ export async function fetchComplaints({
     }
 
     if (queryText) {
-        query = query.textSearch('description', queryText, { type: 'websearch' });
+        query = query.textSearch('text_content', queryText, { type: 'websearch' });
     }
 
     // Apply sorting
@@ -62,11 +67,11 @@ export async function fetchComplaints({
       return { complaints: [], pageCount: 0, error: error.message };
     }
 
-    const mappedComplaints: ComplaintRow[] = (data || []).map((complaint: any) => ({
+    const mappedComplaints: ComplaintRow[] = (data || []).map((complaint: ComplaintWithCategory) => ({
       id: String(complaint.id),
-      text_content: complaint.description || '',
+      text_content: complaint.text_content || '',
       category_id: String(complaint.category_id),
-      status: complaint.status ?? 'open',
+      status: complaint.status === 'in_progress' ? 'in progress' : (complaint.status ?? 'open'),
       priority: complaint.priority ?? 'medium',
       submitted_at: complaint.submitted_at,
       main_topic: complaint.main_topic || null,
@@ -78,9 +83,10 @@ export async function fetchComplaints({
 
     return { complaints: mappedComplaints, pageCount, error: null };
 
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Server Action Error (fetchComplaints - general catch):', e);
-    return { complaints: [], pageCount: 0, error: e.message || 'An unexpected error occurred.' };
+    const message = e instanceof Error ? e.message : 'An unexpected error occurred.';
+    return { complaints: [], pageCount: 0, error: message };
   }
 }
 
@@ -102,9 +108,10 @@ export async function updateComplaintStatus(
         }
 
         return { success: true, error: null };
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error('Server Action Error (updateComplaintStatus - general catch):', e);
-        return { success: false, error: e.message || 'An unexpected error occurred.' };
+        const message = e instanceof Error ? e.message : 'An unexpected error occurred.';
+        return { success: false, error: message };
     }
 }
 
@@ -126,9 +133,10 @@ export async function updateComplaintPriority(
         }
 
         return { success: true, error: null };
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error('Server Action Error (updateComplaintPriority - general catch):', e);
-        return { success: false, error: e.message || 'An unexpected error occurred.' };
+        const message = e instanceof Error ? e.message : 'An unexpected error occurred.';
+        return { success: false, error: message };
     }
 }
 
