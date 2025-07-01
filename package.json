@@ -12,6 +12,7 @@
     "preview": "vercel",
     "postbuild": "echo 'Build completed successfully!'"
   },
+
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.1.1",
@@ -46,7 +47,6 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.58.1",
     "react-leaflet": "^5.0.0",
-    "react-leaflet-cluster": "^2.1.0",
     "react-markdown": "^10.1.0",
     "recharts": "^3.0.2",
     "sonner": "^2.0.5",
