@@ -28,7 +28,7 @@ export default function DashboardMapWrapper({ complaints }: DashboardMapProps) {
   const validComplaints = Array.isArray(complaints) ? complaints : [];
 
   return (
-    <Card className="lg:col-span-2" variant="glass">
+    <Card className="w-full" variant="glass">
       <CardHeader>
         <CardTitle className="flex items-center text-gray-800">
           <MapIcon className="mr-2 h-5 w-5" /> Titik Rawan Pengaduan

@@ -64,50 +64,86 @@ export default function ComplaintMap({ complaints, center, zoom }: ComplaintMapP
     if (typeof window === 'undefined') {
         return null;
     }
+
+    // Debug log
+    console.log('ComplaintMap rendering:', { 
+        totalComplaints: complaints.length, 
+        validComplaints: validComplaints.length,
+        sampleComplaint: validComplaints[0] 
+    });
     
     return (
-        <div className="relative">
-            <MapContainer center={center} zoom={zoom} scrollWheelZoom={false} style={{ height: '100%', width: '100%', borderRadius: '0.75rem' }}>
+        <div className="relative h-full w-full">
+            <MapContainer 
+                center={center} 
+                zoom={zoom} 
+                scrollWheelZoom={false} 
+                style={{ height: '100%', width: '100%', borderRadius: '0.75rem' }}
+                className="z-0"
+            >
                 <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 />
-                {validComplaints.map(complaint => (
-                    <Marker 
-                        key={complaint.id} 
-                        position={[complaint.latitude, complaint.longitude]} 
-                        icon={createPriorityIcon(complaint.priority)}
-                    >
+                {validComplaints.length > 0 ? (
+                    validComplaints.map(complaint => (
+                        <Marker 
+                            key={complaint.id} 
+                            position={[complaint.latitude, complaint.longitude]} 
+                            icon={createPriorityIcon(complaint.priority)}
+                        >
+                            <Popup>
+                                <div className="text-sm">
+                                    <div className="font-semibold mb-1">Pengaduan #{complaint.id}</div>
+                                    <div className="mb-1">
+                                        <strong>Kategori:</strong> {complaint.category || 'N/A'}
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <strong>Prioritas:</strong> 
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                            complaint.priority === 'high' ? 'bg-red-100 text-red-800' : 
+                                            complaint.priority === 'medium' ? 'bg-orange-100 text-orange-800' : 
+                                            'bg-green-100 text-green-800'
+                                        }`}>
+                                            {getPriorityLabel(complaint.priority)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </Popup>
+                        </Marker>
+                    ))
+                ) : (
+                    // Default marker when no data
+                    <Marker position={center} icon={createPriorityIcon('medium')}>
                         <Popup>
-                            <strong>Pengaduan:</strong> {complaint.id}<br />
-                            <strong>Kategori:</strong> {complaint.category || 'N/A'}<br />
-                            <strong>Prioritas:</strong> <span style={{ 
-                                color: complaint.priority === 'high' ? '#ef4444' : 
-                                       complaint.priority === 'medium' ? '#f97316' : '#22c55e',
-                                fontWeight: 'bold'
-                            }}>
-                                {getPriorityLabel(complaint.priority)}
-                            </span>
+                            <div className="text-sm text-gray-500">
+                                Belum ada data pengaduan dengan koordinat yang valid
+                            </div>
                         </Popup>
                     </Marker>
-                ))}
+                )}
             </MapContainer>
             
-            {/* Legend */}
-            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border z-[1000]">
-                <div className="text-sm font-semibold mb-2 text-gray-700">Prioritas Pengaduan</div>
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                        <span className="text-xs text-gray-600">Tinggi</span>
+            {/* Improved Legend */}
+            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-gray-200 z-[1000] min-w-[140px]">
+                <div className="text-sm font-semibold text-gray-800 mb-3 text-center">Prioritas Pengaduan</div>
+                <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 rounded-full bg-red-500 flex-shrink-0"></div>
+                        <span className="text-sm text-gray-700 font-medium">Tinggi</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                        <span className="text-xs text-gray-600">Sedang</span>
+                    <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 rounded-full bg-orange-500 flex-shrink-0"></div>
+                        <span className="text-sm text-gray-700 font-medium">Sedang</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                        <span className="text-xs text-gray-600">Rendah</span>
+                    <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 rounded-full bg-green-500 flex-shrink-0"></div>
+                        <span className="text-sm text-gray-700 font-medium">Rendah</span>
+                    </div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                    <div className="text-xs text-gray-500 text-center">
+                        {validComplaints.length > 0 ? `${validComplaints.length} titik pengaduan` : 'Menunggu data...'}
                     </div>
                 </div>
             </div>

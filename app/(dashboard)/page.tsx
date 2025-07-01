@@ -127,28 +127,38 @@ async function WeeklyComplaintsCard() {
 async function MainDashboardContent() {
     const { complaintsData, complaints, aiInsights } = await getRecentComplaintData();
     return (
-        <>
+        <div className="space-y-8">
+            {/* Map Section - Full Width */}
             <Suspense fallback={<Card variant="glass"><CardContent className="h-[460px]"><MapPlaceholder /></CardContent></Card>}>
                 <DashboardMapWrapper complaints={complaints} />
             </Suspense>
-            <Card variant="glass" className="animate-fade-in-up [animation-delay:300ms]">
-                <CardHeader>
-                    <CardTitle className="flex items-center text-gray-800"><LineChartIcon className="mr-2 h-5 w-5" /> Pengaduan 7 Hari Terakhir</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <ComplaintChart complaints={complaintsData} />
-                </CardContent>
-            </Card>
-            <Card variant="glass" className="animate-fade-in-up [animation-delay:400ms]">
-                <CardHeader>
-                    <CardTitle className="flex items-center text-gray-800"><BrainCircuitIcon className="mr-2 h-5 w-5" /> Wawasan Berbasis AI</CardTitle>
-                    <CardDescription>Analisis cerdas dari data pengaduan Anda.</CardDescription>
-                </CardHeader>
-                <CardContent className="h-[400px] overflow-y-auto">
-                    <AiInsightsDisplay insights={aiInsights} isLoading={false} />
-                </CardContent>
-            </Card>
-        </>
+            
+            {/* Charts and AI Section - Side by Side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
+                <Card variant="glass" className="animate-fade-in-up [animation-delay:300ms]">
+                    <CardHeader>
+                        <CardTitle className="flex items-center text-gray-800">
+                            <LineChartIcon className="mr-2 h-5 w-5" /> Pengaduan 7 Hari Terakhir
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ComplaintChart complaints={complaintsData} />
+                    </CardContent>
+                </Card>
+                
+                <Card variant="glass" className="animate-fade-in-up [animation-delay:400ms]">
+                    <CardHeader>
+                        <CardTitle className="flex items-center text-gray-800">
+                            <BrainCircuitIcon className="mr-2 h-5 w-5" /> Wawasan Berbasis AI
+                        </CardTitle>
+                        <CardDescription>Analisis cerdas dari data pengaduan Anda.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-[400px] overflow-y-auto">
+                        <AiInsightsDisplay insights={aiInsights} isLoading={false} />
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
     );
 }
 
@@ -171,7 +181,7 @@ export default function DashboardHomePage() {
             </Suspense>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
+        <div className="mt-8 grid grid-cols-1 gap-4 md:gap-8">
             <Suspense fallback={<DashboardContentSkeleton />}>
                 <MainDashboardContent />
             </Suspense>
