@@ -35,11 +35,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 // --- TYPE DEFINITIONS TO FIX ALL TYPESCRIPT ERRORS ---
-type ComplaintData = {
-  submitted_at: string;
-  sentiment: string | null;
-  categories: { name: string } | null;
-};
+
 
 interface TrendData {
   date: string;
@@ -132,7 +128,13 @@ export default function AnalyticsPage() {
 
       const { data, error } = await supabase
         .from('complaints')
-        .select('submitted_at, sentiment, categories (name)')
+        .select(`
+          submitted_at,
+          sentiment,
+          categories!inner (
+            name
+          )
+        `)
         .gte('submitted_at', dateRange.from.toISOString())
         .lte('submitted_at', dateRange.to.toISOString())
         .order('submitted_at', { ascending: true });
@@ -143,7 +145,11 @@ export default function AnalyticsPage() {
         return;
       }
       
-      const complaints: ComplaintData[] = data || [];
+      const complaints: Array<{
+        submitted_at: string;
+        sentiment: string | null;
+        categories: { name: string } | null;
+      }> = data || [];
 
       // Process Trend Data
       const dailyCounts = complaints.reduce((acc: Record<string, number>, complaint) => {

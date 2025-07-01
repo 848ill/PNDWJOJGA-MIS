@@ -10,13 +10,14 @@ import { MotionDiv } from '@/components/shared/MotionDiv';
 export default async function UserManagementPage({
   searchParams,
 }: {
-  searchParams?: {
+  searchParams?: Promise<{
     page?: string;
     limit?: string;
-  };
+  }>;
 }) {
-    const page = searchParams?.page ?? '1';
-    const limit = searchParams?.limit ?? '10';
+    const resolvedSearchParams = await searchParams;
+    const page = resolvedSearchParams?.page ?? '1';
+    const limit = resolvedSearchParams?.limit ?? '10';
     const { users, roles, pageCount } = await fetchUsers({ page, limit });
 
     const variants = {

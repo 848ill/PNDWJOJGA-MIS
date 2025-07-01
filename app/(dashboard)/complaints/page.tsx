@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default async function ComplaintsPage({
   searchParams,
 }: {
-  searchParams?: {
+  searchParams?: Promise<{
     query?: string;
     page?: string;
     limit?: string;
@@ -16,19 +16,20 @@ export default async function ComplaintsPage({
     priority?: string;
     sort?: string;
     order?: string;
-  };
+  }>;
 }) {
-  const pageIndex = Number(searchParams?.page) - 1 || 0;
-  const pageSize = Number(searchParams?.limit) || 10;
+  const resolvedSearchParams = await searchParams;
+  const pageIndex = Number(resolvedSearchParams?.page) - 1 || 0;
+  const pageSize = Number(resolvedSearchParams?.limit) || 10;
   
   const { complaints, pageCount: totalPages, error } = await fetchComplaints({
     pageIndex,
     pageSize,
     searchParams: {
-      q: searchParams?.query,
-      status: searchParams?.status,
-      sort: searchParams?.sort,
-      order: searchParams?.order,
+      q: resolvedSearchParams?.query,
+      status: resolvedSearchParams?.status,
+      sort: resolvedSearchParams?.sort,
+      order: resolvedSearchParams?.order,
     },
   });
 
