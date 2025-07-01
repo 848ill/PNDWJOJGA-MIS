@@ -1,11 +1,10 @@
-// lib/supabase/server-session-client.ts
 'use server';
 
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { Database } from '@/lib/types/supabase';
 
-// Client for Server Components/API Routes WITH USER SESSION
+
 export const createClient = async () => {
   const cookieStore = await cookies();
 

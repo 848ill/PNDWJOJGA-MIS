@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server-session-client';
 import { redirect } from 'next/navigation';
 
 export async function getDashboardData() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { session }, error } = await supabase.auth.getSession();
 
     if (error || !session) {

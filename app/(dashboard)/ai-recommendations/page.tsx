@@ -1,4 +1,4 @@
-// app/(dashboard)/ai-recommendations/page.tsx
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
 import { MotionDiv } from '@/components/shared/MotionDiv';
 
-// Define the structure of a chat message
+
 interface Message {
   role: 'user' | 'model';
   content: string;
@@ -24,7 +24,7 @@ export default function AiRecommendationsPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Automatically scroll to the bottom when new messages are added
+  
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;

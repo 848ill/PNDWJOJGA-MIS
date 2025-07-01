@@ -14,10 +14,23 @@ export default async function ComplaintsPage({
     limit?: string;
     status?: string;
     priority?: string;
+    sort?: string;
+    order?: string;
   };
 }) {
-  const { complaints, count, error } = await fetchComplaints(searchParams ?? {});
-  const totalPages = count ? Math.ceil(count / (Number(searchParams?.limit) || 10)) : 1;
+  const pageIndex = Number(searchParams?.page) - 1 || 0;
+  const pageSize = Number(searchParams?.limit) || 10;
+  
+  const { complaints, pageCount: totalPages, error } = await fetchComplaints({
+    pageIndex,
+    pageSize,
+    searchParams: {
+      q: searchParams?.query,
+      status: searchParams?.status,
+      sort: searchParams?.sort,
+      order: searchParams?.order,
+    },
+  });
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

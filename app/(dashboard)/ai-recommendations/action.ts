@@ -1,10 +1,10 @@
-// app/(dashboard)/ai-recommendations/action.ts
+
 'use server';
 
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 
-// Define the structure for chat history messages
+
 interface ChatHistoryPart {
     text: string;
 }
@@ -17,7 +17,7 @@ interface ChatHistoryItem {
 const MODEL_NAME = "gemini-1.5-flash";
 const API_KEY = process.env.GEMINI_API_KEY!;
 
-// Pre-fetches the latest 20 open complaints and formats them as context
+
 async function getComplaintContext() {
     const supabase = createAdminSupabaseClient();
     const { data: complaints, error } = await supabase
@@ -42,7 +42,7 @@ async function getComplaintContext() {
 }
 
 export async function generateRecommendations(history: ChatHistoryItem[], newMessage: string) {
-    // Easter Egg: Check for the specific question about grades (more flexible)
+    
     const normalizedMessage = newMessage.toLowerCase().replace(/\s+/g, '');
     if (
         normalizedMessage.includes('nilai') &&
@@ -97,7 +97,7 @@ export async function generateRecommendations(history: ChatHistoryItem[], newMes
             - **Language:** Your primary language for interaction is Indonesian (Bahasa Indonesia).
         `;
         
-        // Start a chat session with the system instruction and previous history
+        
         const chat = model.startChat({
             generationConfig,
             safetySettings,
@@ -108,7 +108,7 @@ export async function generateRecommendations(history: ChatHistoryItem[], newMes
             ]
         });
 
-        // The new message from the user, now prepended with the fresh data context
+        
         const fullPrompt = `
             CONTEXT:
             ${contextResult.report}
