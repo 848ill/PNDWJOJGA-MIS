@@ -15,6 +15,7 @@ interface DashboardMapProps {
     latitude: number;
     longitude: number;
     category?: string;
+    priority: 'low' | 'medium' | 'high';
   }[];
 }
 

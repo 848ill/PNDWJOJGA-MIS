@@ -69,11 +69,12 @@ async function getRecentComplaintData() {
             longitude: c.longitude,
             id: String(c.id),
             category: c.categories?.[0]?.name ?? 'Belum Dikategorikan',
+            priority: (c.priority as 'low' | 'medium' | 'high') ?? 'medium',
           };
         }
         return null;
       })
-      .filter((l): l is { latitude: number; longitude: number; id: string; category: string; } => l !== null);
+      .filter((l): l is { latitude: number; longitude: number; id: string; category: string; priority: 'low' | 'medium' | 'high'; } => l !== null);
       
     const aiInsights = (data || [])
       .filter(c => c.main_topic || c.ai_summary)

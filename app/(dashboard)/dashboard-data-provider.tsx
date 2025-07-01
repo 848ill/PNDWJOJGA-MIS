@@ -3,16 +3,16 @@ import { redirect } from 'next/navigation';
 
 export async function getDashboardData() {
     const supabase = await createClient();
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-    if (error || !session) {
+    if (error || !user) {
         redirect('/login');
     }
 
     const { data: userData, error: userError } = await supabase
         .from('users')
         .select('*, roles(name)')
-        .eq('id', session.user.id)
+        .eq('id', user.id)
         .single();
     
     if (userError || !userData) {
@@ -21,7 +21,7 @@ export async function getDashboardData() {
     }
 
     return {
-        user: session.user,
+        user: user,
         userRole: userData.roles?.name || null
     };
 } 
