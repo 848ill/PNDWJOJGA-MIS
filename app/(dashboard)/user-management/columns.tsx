@@ -5,7 +5,6 @@ import { ColumnDef, Row } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { UserRow } from "./actions"
-import { UserActions } from "./user-actions"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
 
@@ -101,10 +100,7 @@ export const columns: ColumnDef<UserRow>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }: { row: Row<UserRow> }) => {
-      const user = row.original;
-      return <UserActions user={user} />;
-    },
+    enableHiding: false,
   },
 ]
 

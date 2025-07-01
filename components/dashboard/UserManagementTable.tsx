@@ -37,6 +37,7 @@ export function UserManagementTable({ users, roles, pageCount, onUserChanged }: 
       columns={memoizedColumns}
       data={users}
       pageCount={pageCount}
+      isPending={false}
     />
   )
 }
