@@ -1,9 +1,7 @@
 'use client';
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import 'leaflet.heat';
-import { useEffect, useRef } from 'react';
 import * as L from 'leaflet';
 
 // Create different colored icons for different priorities
@@ -46,48 +44,6 @@ interface ComplaintMapProps {
     zoom: number;
 }
 
-const HeatmapLayer = ({ complaints }: { complaints: ComplaintMapProps['complaints'] }) => {
-    const map = useMap();
-    const heatLayerRef = useRef<L.Layer>();
-
-    useEffect(() => {
-        if (!map) return;
-
-        const points = complaints
-            .filter(c => c.latitude && c.longitude)
-            .map(c => {
-                // Set intensity based on priority
-                let intensity = 0.3;
-                switch (c.priority) {
-                    case 'high':
-                        intensity = 1.0;
-                        break;
-                    case 'medium':
-                        intensity = 0.6;
-                        break;
-                    case 'low':
-                        intensity = 0.3;
-                        break;
-                }
-                return [c.latitude, c.longitude, intensity] as [number, number, number];
-            }); 
-
-        if (heatLayerRef.current) {
-            map.removeLayer(heatLayerRef.current);
-        }
-
-        heatLayerRef.current = L.heatLayer(points, { 
-            radius: 25,
-            blur: 15,
-            maxZoom: 18,
-            gradient: {0.4: 'blue', 0.65: 'lime', 1: 'red'}
-        }).addTo(map);
-
-    }, [complaints, map]);
-
-    return null;
-};
-
 // Helper function to get priority label in Indonesian
 const getPriorityLabel = (priority: 'low' | 'medium' | 'high') => {
     switch (priority) {
@@ -116,7 +72,6 @@ export default function ComplaintMap({ complaints, center, zoom }: ComplaintMapP
                     url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 />
-                <HeatmapLayer complaints={validComplaints} />
                 {validComplaints.map(complaint => (
                     <Marker 
                         key={complaint.id} 
