@@ -13,6 +13,7 @@ import {
   Settings,
   LifeBuoy,
   Briefcase,
+  Shield,
   PanelLeftClose,
   PanelLeftOpen
 } from 'lucide-react';
@@ -35,6 +36,7 @@ export default function Sidebar({ userRole, className, isCollapsed, onToggle }: 
     { name: 'Rekomendasi AI', href: '/ai-recommendations', icon: Briefcase, roles: ['system_admin', 'healthcare_official', 'transportation_official', 'infrastructure_official', 'education_official', 'executive'] },
     { name: 'Manajemen Pengguna', href: '/user-management', icon: Users, roles: ['system_admin'] },
     { name: 'Alat Dukungan TI', href: '/it-support', icon: LifeBuoy, roles: ['system_admin', 'it_support'] },
+    { name: 'Log Audit', href: '/it-support/audit-logs', icon: Shield, roles: ['system_admin'] },
     { name: 'Pengaturan', href: '/settings', icon: Settings, roles: ['system_admin'] },
   ];
 

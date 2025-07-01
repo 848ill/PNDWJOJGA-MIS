@@ -145,11 +145,11 @@ export default function AnalyticsPage() {
         return;
       }
       
-      const complaints: Array<{
+      const complaints = (data || []) as unknown as Array<{
         submitted_at: string;
         sentiment: string | null;
         categories: { name: string } | null;
-      }> = data || [];
+      }>;
 
       // Process Trend Data
       const dailyCounts = complaints.reduce((acc: Record<string, number>, complaint) => {

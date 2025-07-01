@@ -3,11 +3,11 @@
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { type ComplaintRow } from '@/components/dashboard/ComplaintsTable';
 import { revalidatePath } from 'next/cache';
-import type { Database } from '@/lib/types/supabase';
+// import type { Database } from '@/lib/types/supabase';
 
-type ComplaintWithCategory = Database['public']['Views']['complaints_with_priority_rank']['Row'] & {
-  categories: { name: string } | null;
-};
+// type ComplaintWithCategory = Database['public']['Views']['complaints_with_priority_rank']['Row'] & {
+//   categories: { name: string } | null;
+// };
 
 interface FetchComplaintsParams {
   pageIndex: number;
@@ -67,17 +67,20 @@ export async function fetchComplaints({
       return { complaints: [], pageCount: 0, error: error.message };
     }
 
-    const mappedComplaints: ComplaintRow[] = (data || []).map((complaint: ComplaintWithCategory) => ({
-      id: String(complaint.id),
-      text_content: complaint.text_content || '',
-      category_id: String(complaint.category_id),
-      status: complaint.status === 'in_progress' ? 'in progress' : (complaint.status ?? 'open'),
-      priority: complaint.priority ?? 'medium',
-      submitted_at: complaint.submitted_at,
-      main_topic: complaint.main_topic || null,
-      sentiment: complaint.sentiment || null,
-      category_name: complaint.categories?.name || 'N/A',
-    }));
+    const mappedComplaints: ComplaintRow[] = (data || []).map((complaint: unknown) => {
+      const c = complaint as Record<string, unknown>;
+      return {
+        id: String(c.id),
+        text_content: (c.text_content as string) || '',
+        category_id: String(c.category_id),
+        status: c.status === 'in_progress' ? 'in progress' : ((c.status as string) === 'open' || (c.status as string) === 'resolved' || (c.status as string) === 'closed' ? (c.status as 'open' | 'resolved' | 'closed') : 'open'),
+        priority: ((c.priority as string) === 'low' || (c.priority as string) === 'high' ? (c.priority as 'low' | 'high') : 'medium'),
+                 submitted_at: (c.submitted_at as string),
+        main_topic: (c.main_topic as string) || null,
+        sentiment: (c.sentiment as string) || null,
+        category_name: ((c.categories as { name?: string })?.name) || 'N/A',
+      };
+    });
 
     const pageCount = count !== null ? Math.ceil(count / pageSize) : 0;
 

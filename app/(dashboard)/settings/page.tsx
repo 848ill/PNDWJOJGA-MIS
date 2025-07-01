@@ -224,7 +224,10 @@ async function SettingsContentAsync() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="min-password-length">Minimum Password Length</Label>
-                <Input id="min-password-length" type="number" defaultValue="8" min="6" max="32" />
+                <Input id="min-password-length" type="number" defaultValue="12" min="8" max="32" />
+                <div className="text-xs text-muted-foreground">
+                  Recommended: 12+ characters for strong security
+                </div>
               </div>
               
               <div className="flex items-center justify-between">
