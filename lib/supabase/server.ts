@@ -1,7 +1,7 @@
 // lib/supabase/server.ts
 // This file serves as the single source for Supabase server-side clients.
 
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient as createSupabaseServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers'; // This import is specific to server-side rendering environments
 import { type Database } from '@/lib/types/supabase'; // Import your generated database types
 
@@ -13,10 +13,10 @@ import { type Database } from '@/lib/types/supabase'; // Import your generated d
  * @param cookieStore The cookies instance from 'next/headers' (e.g., `cookies()`).
  * @returns A SupabaseClient instance configured for the user's session.
  */
-export const createServerClient = () => {
-  const cookieStore = cookies();
+export const createServerClient = async () => {
+  const cookieStore = await cookies();
 
-  return createServerClient(
+  return createSupabaseServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -60,7 +60,7 @@ export function createAdminSupabaseClient() {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set in .env.local');
   }
-  return createServerClient<Database>(
+  return createSupabaseServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL as string,
     process.env.SUPABASE_SERVICE_ROLE_KEY as string,
     {
