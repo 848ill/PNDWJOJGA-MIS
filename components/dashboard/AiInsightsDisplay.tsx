@@ -1,5 +1,4 @@
-// components/dashboard/AiInsightsDisplay.tsx
-'use client'; // This component will run on the client-side
+'use client'; 
 
 import { Card, CardContent } from "@/components/ui/card";
 import { 

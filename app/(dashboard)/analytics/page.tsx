@@ -289,7 +289,7 @@ export default function AnalyticsPage() {
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
                <BarChart 
-                data={categoryData.sort((a, b) => a.total - b.total)} 
+                data={[...categoryData].sort((a, b) => a.total - b.total)} 
                 layout="vertical" 
                 margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
                >
