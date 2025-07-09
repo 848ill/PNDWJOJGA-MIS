@@ -11,6 +11,12 @@ const cardVariants = cva(
         default: "",
         glass:
           "bg-white/60 backdrop-blur-xl border-white/20 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl",
+        premium: 
+          "bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl border border-white/30 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:shadow-3xl hover:bg-gradient-to-br hover:from-white/95 hover:to-white/80",
+        floating:
+          "bg-white/80 backdrop-blur-md border border-indigo-100/50 shadow-lg shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/20",
+        neon:
+          "bg-slate-900/90 backdrop-blur-xl border border-cyan-500/30 shadow-lg shadow-cyan-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/40 hover:border-cyan-400/50",
       },
     },
     defaultVariants: {

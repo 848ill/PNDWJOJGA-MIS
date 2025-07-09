@@ -40,20 +40,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-gray-50 overflow-hidden">
-        {/* Animated Gradient Blobs */}
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob2 [animation-delay:2s]"></div>
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-sky-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob [animation-delay:4s]"></div>
+    <div className="relative min-h-screen w-full bg-slate-50 overflow-hidden">
+        {/* Sophisticated Background Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/90 to-slate-100/40"></div>
 
         <div className="relative flex min-h-screen w-full items-center justify-center p-4">
             <div className="w-full max-w-md">
                 <Card className="rounded-2xl shadow-2xl border border-white/20 bg-gradient-to-br from-white/70 to-white/50 backdrop-blur-2xl">
                     <CardHeader>
                         <div className="mx-auto my-8 text-center">
-                            <h1 className="bg-gradient-to-r from-gray-800 to-black bg-clip-text text-4xl font-bold tracking-tight text-transparent">
-                                PNDWJOGJA
+                            <div className="flex items-center justify-center gap-3 mb-2">
+                                <div className="w-10 h-10 bg-gradient-to-br from-slate-700 to-slate-900 rounded-lg flex items-center justify-center">
+                                    <span className="text-white font-bold text-sm">DIY</span>
+                                </div>
+                            </div>
+                            <h1 className="text-slate-800 text-3xl font-bold tracking-tight">
+                                PANDAWA JOGJA
                             </h1>
+                            <p className="text-slate-600 text-sm mt-1">Sistem Informasi Manajemen Pengaduan</p>
                         </div>
                     </CardHeader>
                     <CardContent className="pt-0">
@@ -94,7 +99,7 @@ export default function LoginPage() {
                             {error && (
                                 <p className="text-red-600 text-sm text-center">{error}</p>
                             )}
-                            <Button type="submit" className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 text-base rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-gray-900/20" disabled={loading}>
+                            <Button type="submit" className="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 text-base rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-slate-900/20" disabled={loading}>
                                 {loading ? 'Sedang memproses...' : 'Masuk'}
                             </Button>
                         </form>

@@ -27,7 +27,7 @@ interface AiInsightsDisplayProps {
 }
 
 export const AiInsightsDisplay = ({ insights, isLoading }: AiInsightsDisplayProps) => {
-  // Generate meaningful insights based on actual data patterns
+  // Generate enhanced AI insights dengan data visualization compatibility
   const generateSmartInsights = () => {
     if (!insights || insights.length === 0) {
       return [
@@ -42,8 +42,8 @@ export const AiInsightsDisplay = ({ insights, isLoading }: AiInsightsDisplayProp
 
     const smartInsights = [];
 
-    // Priority Analysis
-    const totalComplaints = insights.length;
+    
+    const totalComplaints = insights.length;  
     
     smartInsights.push({
       icon: <Target className="h-5 w-5 text-red-500" />,
@@ -52,7 +52,7 @@ export const AiInsightsDisplay = ({ insights, isLoading }: AiInsightsDisplayProp
       type: "priority"
     });
 
-    // Category Analysis
+    // buat analisis kategori
     const categories = insights.map(i => i.categoryName).filter(Boolean);
     const uniqueCategories = Array.from(new Set(categories));
     
@@ -65,12 +65,12 @@ export const AiInsightsDisplay = ({ insights, isLoading }: AiInsightsDisplayProp
       });
     }
 
-    // Sentiment Analysis
+    // buat analisis sentimen
     const sentiments = insights.map(i => i.sentiment).filter(Boolean);
     const negativeSentiments = sentiments.filter(s => s === 'Negative').length;
     const sentimentPercentage = sentiments.length > 0 ? Math.round((negativeSentiments / sentiments.length) * 100) : 0;
     
-    if (sentiments.length > 0) {
+    if (sentiments.length > 0) { // ai kasih saran, komponen render hasil AI ke UI yang user lihat 
       smartInsights.push({
         icon: <TrendingUp className="h-5 w-5 text-orange-500" />,
         title: "Analisis Sentimen",
@@ -79,15 +79,15 @@ export const AiInsightsDisplay = ({ insights, isLoading }: AiInsightsDisplayProp
       });
     }
 
-    // Actionable Recommendations
+    // buat rekomendasi tindakan
     smartInsights.push({
       icon: <AlertTriangle className="h-5 w-5 text-green-500" />,
       title: "Rekomendasi Tindakan",
       content: "Prioritaskan penanganan pengaduan dengan sentimen negatif dan kategori infrastruktur untuk meningkatkan kepuasan masyarakat.",
       type: "action"
-    });
+    }); 
 
-    // Geographic Insights
+    // buat analisis geografis
     smartInsights.push({
       icon: <MapPin className="h-5 w-5 text-purple-500" />,
       title: "Distribusi Geografis",

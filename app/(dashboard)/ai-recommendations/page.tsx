@@ -5,12 +5,12 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { generateRecommendations } from './action';
-import ReactMarkdown from 'react-markdown';
 import { Loader2, Send, Sparkles, Bot, User } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
 import { MotionDiv } from '@/components/shared/MotionDiv';
+import { EnhancedAiResponse } from '@/components/dashboard/EnhancedAiResponse';
 
 
 interface Message {
@@ -63,11 +63,8 @@ export default function AiRecommendationsPage() {
     }
   };
 
-  const markdownComponents: { [key: string]: React.ElementType } = {
-    p: ({ ...props }) => <p className="leading-relaxed" {...props} />,
-    ul: ({ ...props }) => <ul className="list-disc space-y-1 pl-5" {...props} />,
-    ol: ({ ...props }) => <ol className="list-decimal space-y-1 pl-5" {...props} />,
-    strong: ({ ...props }) => <strong className="font-semibold" {...props} />,
+  const handleRequestChart = (query: string) => {
+    setInput(query);
   };
 
   return (
@@ -86,8 +83,8 @@ export default function AiRecommendationsPage() {
                         </AvatarFallback>
                     </Avatar>
                     <div>
-                        <CardTitle className="text-lg font-semibold text-gray-800">PAWA - Pandawa AI Wisdom Advisor</CardTitle>
-                        <CardDescription className="text-sm">Penasihat interaktif Anda untuk analisis data pengaduan.</CardDescription>
+                        <CardTitle className="text-lg font-semibold text-gray-800">PAWA Enhanced - AI Analytics Center</CardTitle>
+                        <CardDescription className="text-sm">Analisis comprehensive dengan visualisasi data, trend analysis, dan rekomendasi strategis untuk Pemerintah DIY.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
@@ -96,9 +93,26 @@ export default function AiRecommendationsPage() {
                 {messages.length === 0 ? (
                     <div className="text-center text-muted-foreground flex flex-col items-center justify-center h-full">
                         <Sparkles className="mx-auto h-16 w-16 text-blue-500/30 mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-700">Selamat Datang di PAWA</h3>
-                        <p className="mt-1">Tanyakan apa saja tentang data pengaduan.</p>
-                        <p className="text-sm text-muted-foreground/80 mt-2">Contoh: &quot;Apa 3 pengaduan teratas minggu ini?&quot;</p>
+                        <h3 className="text-lg font-semibold text-gray-700">Selamat Datang di PAWA Enhanced</h3>
+                        <p className="mt-1 text-slate-600">AI Analytics dengan Visualisasi Data Komprehensif</p>
+                        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl">
+                            <div className="p-3 bg-blue-50 rounded-lg text-left">
+                                <h4 className="font-medium text-blue-800 text-sm">📊 Data & Charts</h4>
+                                <p className="text-xs text-blue-600 mt-1">&quot;Buatkan grafik distribusi pengaduan per kategori&quot;</p>
+                            </div>
+                            <div className="p-3 bg-green-50 rounded-lg text-left">
+                                <h4 className="font-medium text-green-800 text-sm">📈 Trend Analysis</h4>
+                                <p className="text-xs text-green-600 mt-1">&quot;Analisis tren pengaduan 7 hari terakhir&quot;</p>
+                            </div>
+                            <div className="p-3 bg-purple-50 rounded-lg text-left">
+                                <h4 className="font-medium text-purple-800 text-sm">🎯 Smart Recommendations</h4>
+                                <p className="text-xs text-purple-600 mt-1">&quot;Rekomendasi prioritas berdasarkan data&quot;</p>
+                            </div>
+                            <div className="p-3 bg-orange-50 rounded-lg text-left">
+                                <h4 className="font-medium text-orange-800 text-sm">⚠️ Alert System</h4>
+                                <p className="text-xs text-orange-600 mt-1">&quot;Identifikasi pengaduan prioritas tinggi&quot;</p>
+                            </div>
+                        </div>
                     </div>
                 ) : (
                     messages.map((msg, index) => (
@@ -110,12 +124,19 @@ export default function AiRecommendationsPage() {
                                 </AvatarFallback>
                             </Avatar>
                         )}
-                        <div className={cn("max-w-2xl rounded-xl p-3 px-4 text-sm shadow-sm", 
+                        <div className={cn("max-w-4xl rounded-xl shadow-sm", 
                             msg.role === 'user' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'bg-white/80 backdrop-blur-sm'
+                            ? 'bg-blue-600 text-white p-3 px-4' 
+                            : 'bg-transparent p-0'
                         )}>
-                            <ReactMarkdown components={markdownComponents}>{msg.content}</ReactMarkdown>
+                            {msg.role === 'user' ? (
+                                <div className="text-sm">{msg.content}</div>
+                            ) : (
+                                <EnhancedAiResponse 
+                                    content={msg.content} 
+                                    onRequestChart={handleRequestChart}
+                                />
+                            )}
                         </div>
                         {msg.role === 'user' && (
                              <Avatar className="h-9 w-9 border-2 border-white/60">
@@ -147,9 +168,9 @@ export default function AiRecommendationsPage() {
                     <Textarea
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Tanyakan tentang pengaduan prioritas tinggi, tema berulang, dll."
+                        placeholder="Minta analisis dengan visualisasi: 'Buatkan grafik distribusi pengaduan per wilayah' atau 'Analisis tren prioritas tinggi'"
                         className="flex-1 resize-none rounded-lg border-gray-300/50 shadow-sm focus-visible:ring-blue-500"
-                        rows={1}
+                        rows={2}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();

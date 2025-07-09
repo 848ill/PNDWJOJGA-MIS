@@ -1,15 +1,13 @@
-// app/(dashboard)/page.tsx
 import { Suspense } from 'react';
-import { createAdminSupabaseClient } from '@/lib/supabase/admin'; // Use server client for server components
+import { createAdminSupabaseClient } from '@/lib/supabase/admin'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardSkeleton } from '@/components/ui/card';
 import ComplaintChart from '@/components/dashboard/ComplaintCharts';
 import { AiInsightsDisplay } from '@/components/dashboard/AiInsightsDisplay';
-import { Activity, Users, LineChartIcon, BrainCircuitIcon } from 'lucide-react';
+import { Activity, Users, LineChartIcon, BrainCircuitIcon, Clock, TrendingUp } from 'lucide-react';
 import DashboardMapWrapper from '@/components/dashboard/DashboardMapWrapper';
 import { MapPlaceholder } from '@/components/dashboard/MapPlaceholder';
 import { ComplaintRow } from '@/components/dashboard/ComplaintsTable';
-
-// --- Data Fetching Functions (Server-Side) ---
+import { TextReveal } from '@/components/premium';
 
 async function getTotalComplaints() {
   const supabase = createAdminSupabaseClient();
@@ -36,10 +34,10 @@ async function getWeeklyComplaints() {
     return count ?? 0;
 }
 
-async function getRecentComplaintData() {
+async function getRecentComplaintData() { //page minta ke db buat ambil data pengaduan
     const supabase = createAdminSupabaseClient();
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); // dari 7 hari terakhir = page.tsx ngirim query ke db supabase, setelah itu db ngirim data ke page.tsx
     const { data, error } = await supabase
         .from('complaints')
         .select('id, submitted_at, category_id, categories(name), latitude, longitude, main_topic, sentiment, ai_summary, ai_advice, ai_what_to_do, text_content, status, priority')
@@ -76,11 +74,11 @@ async function getRecentComplaintData() {
       })
       .filter((l): l is { latitude: number; longitude: number; id: string; category: string; priority: 'low' | 'medium' | 'high'; } => l !== null);
       
-    const aiInsights = (data || [])
+    const aiInsights = (data || []) //page.tsx bilang "filter yang punya AI analysis saja"
       .filter(c => c.main_topic || c.ai_summary)
       .map((c) => ({
           id: String(c.id),
-          mainTopic: c.main_topic,
+          mainTopic: c.main_topic, //page.tsx bilang "ambil main topic, summary, advice, what to do, sentiment, category name, title"
           summary: c.ai_summary,
           advice: c.ai_advice,
           whatToDo: c.ai_what_to_do,
@@ -92,18 +90,25 @@ async function getRecentComplaintData() {
     return { complaintsData, complaints, aiInsights };
 }
 
-// --- Wrapper Components with Suspense ---
 
 async function TotalComplaintsCard() {
     const total = await getTotalComplaints();
     return (
-        <Card variant="glass" className="animate-fade-in-up">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-700">Total Pengaduan</CardTitle>
-                <Activity className="h-4 w-4 text-gray-500" />
+        <Card className="executive-card animate-fade-in-up group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-slate-700 tracking-wide uppercase">
+                    Total Pengaduan
+                </CardTitle>
+                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-slate-100 transition-colors duration-300">
+                    <Activity className="h-4 w-4 text-slate-600" />
+                </div>
             </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold text-gray-900">{total.toLocaleString()}</div>
+            <CardContent className="pt-0">
+                <div className="text-2xl font-bold text-slate-900 metric-number">{total.toLocaleString()}</div>
+                <div className="text-xs text-slate-500 mt-1 font-medium">Seluruh pengaduan terdaftar</div>
+                <div className="w-full bg-slate-200 h-0.5 rounded-full mt-3">
+                    <div className="w-full bg-slate-400 h-0.5 rounded-full"></div>
+                </div>
             </CardContent>
         </Card>
     );
@@ -112,13 +117,69 @@ async function TotalComplaintsCard() {
 async function WeeklyComplaintsCard() {
     const total = await getWeeklyComplaints();
     return (
-        <Card variant="glass" className="animate-fade-in-up [animation-delay:100ms]">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-700">Baru Minggu Ini</CardTitle>
-                <Users className="h-4 w-4 text-gray-500" />
+        <Card className="executive-card animate-fade-in-up [animation-delay:100ms] group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-slate-700 tracking-wide uppercase">
+                    Aktivitas Terbaru
+                </CardTitle>
+                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-slate-100 transition-colors duration-300">
+                    <Users className="h-4 w-4 text-slate-600" />
+                </div>
             </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold text-gray-900">{total.toLocaleString()}</div>
+            <CardContent className="pt-0">
+                <div className="text-2xl font-bold text-slate-900 metric-number">{total.toLocaleString()}</div>
+                <div className="text-xs text-slate-500 mt-1 font-medium">7 hari terakhir</div>
+                <div className="w-full bg-slate-200 h-0.5 rounded-full mt-3">
+                    <div className="w-4/5 bg-slate-500 h-0.5 rounded-full"></div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+async function ResolutionTimeCard() {
+    // Mock data - replace with actual query
+    const avgTime = "2.3";
+    return (
+        <Card className="executive-card animate-fade-in-up [animation-delay:200ms] group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-slate-700 tracking-wide uppercase">
+                    Rata-rata Penyelesaian
+                </CardTitle>
+                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-slate-100 transition-colors duration-300">
+                    <Clock className="h-4 w-4 text-slate-600" />
+                </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+                <div className="text-2xl font-bold text-slate-900 metric-number">{avgTime} hari</div>
+                <div className="text-xs text-slate-500 mt-1 font-medium">Waktu penyelesaian rata-rata</div>
+                <div className="w-full bg-slate-200 h-0.5 rounded-full mt-3">
+                    <div className="w-3/5 bg-slate-600 h-0.5 rounded-full"></div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+async function PerformanceCard() {
+    // Mock data - replace with actual query
+    const performance = "94.2";
+    return (
+        <Card className="executive-card animate-fade-in-up [animation-delay:300ms] group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-slate-700 tracking-wide uppercase">
+                    Kinerja Sistem
+                </CardTitle>
+                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-slate-100 transition-colors duration-300">
+                    <TrendingUp className="h-4 w-4 text-slate-600" />
+                </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+                <div className="text-2xl font-bold text-slate-900 metric-number">{performance}%</div>
+                <div className="text-xs text-slate-500 mt-1 font-medium">Rating efisiensi keseluruhan</div>
+                <div className="w-full bg-slate-200 h-0.5 rounded-full mt-3">
+                    <div className="w-5/6 bg-slate-700 h-0.5 rounded-full"></div>
+                </div>
             </CardContent>
         </Card>
     );
@@ -128,60 +189,99 @@ async function MainDashboardContent() {
     const { complaintsData, complaints, aiInsights } = await getRecentComplaintData();
     return (
         <div className="space-y-8">
-            {/* Map Section - Full Width */}
-            <Suspense fallback={<Card variant="glass"><CardContent className="h-[460px]"><MapPlaceholder /></CardContent></Card>}>
-                <DashboardMapWrapper complaints={complaints} />
+            
+            <Suspense fallback={
+                <Card className="executive-card">
+                    <CardHeader className="pb-4">
+                        <CardTitle className="text-lg font-semibold sophisticated-text">Distribusi Geografis</CardTitle>
+                        <CardDescription className="text-slate-600">Pemetaan pengaduan real-time dan analisis lokasi</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-[460px] relative">
+                        <div className="relative z-10">
+                            <MapPlaceholder />
+                        </div>
+                    </CardContent>
+                </Card>
+            }>
+                <Card className="executive-card animate-fade-in-up [animation-delay:400ms]">
+                    <CardHeader className="pb-4">
+                        <CardTitle className="text-lg font-semibold sophisticated-text">Distribusi Geografis</CardTitle>
+                        <CardDescription className="text-slate-600">Pemetaan pengaduan real-time dan analisis lokasi</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-[460px] relative p-0 overflow-hidden">
+                        <DashboardMapWrapper complaints={complaints} />
+                    </CardContent>
+                </Card>
             </Suspense>
             
-            {/* Charts and AI Section - Side by Side */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
-                <Card variant="glass" className="animate-fade-in-up [animation-delay:300ms]">
-                    <CardHeader>
-                        <CardTitle className="flex items-center text-gray-800">
-                            <LineChartIcon className="mr-2 h-5 w-5" /> Pengaduan 7 Hari Terakhir
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="executive-card animate-fade-in-up [animation-delay:500ms]">
+                    <CardHeader className="pb-4">
+                        <CardTitle className="flex items-center sophisticated-text font-semibold">
+                            <LineChartIcon className="mr-3 h-5 w-5 text-slate-600" /> 
+                            Analisis Tren
                         </CardTitle>
+                        <CardDescription className="text-slate-600">
+                            Volume dan pola pengaduan mingguan
+                        </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                         <ComplaintChart complaints={complaintsData} />
                     </CardContent>
                 </Card>
                 
-                <Card variant="glass" className="animate-fade-in-up [animation-delay:400ms]">
-                    <CardHeader>
-                        <CardTitle className="flex items-center text-gray-800">
-                            <BrainCircuitIcon className="mr-2 h-5 w-5" /> Wawasan Berbasis AI
+                <Card className="executive-card animate-fade-in-up [animation-delay:600ms]"> 
+                    <CardHeader className="pb-4">
+                        <CardTitle className="flex items-center sophisticated-text font-semibold">
+                            <BrainCircuitIcon className="mr-3 h-5 w-5 text-slate-600" /> 
+                            Laporan Analitik
                         </CardTitle>
-                        <CardDescription>Analisis cerdas dari data pengaduan Anda.</CardDescription>
+                        <CardDescription className="text-slate-600">
+                            Wawasan dan rekomendasi berbasis AI
+                        </CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[400px] overflow-y-auto">
+                    <CardContent className="h-[400px] overflow-y-auto pt-0"> 
                         <AiInsightsDisplay insights={aiInsights} isLoading={false} />
-                    </CardContent>
+                    </CardContent> 
                 </Card>
             </div>
         </div>
     );
 }
-
-// --- Main Page Component ---
+// di line 157 page bilang " nih data-nya tolong analysis" dari sini page.tsx lempar data ke AiInsightsDisplay component
 
 export default function DashboardHomePage() {
   return (
-    <div className="relative z-0 flex flex-1 flex-col gap-8 p-4 md:p-8">
-        <div className="animate-fade-in-up">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-800">Dasbor</h1>
-            <p className="text-gray-500 mt-1">Selamat datang kembali! Ini adalah ringkasan sistem Anda.</p>
+    <div className="relative z-0 flex flex-1 flex-col gap-10 p-6 md:p-10">
+        <div className="animate-fade-in-up space-y-3">
+            <div className="space-y-1">
+                <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+                    Dasbor Eksekutif
+                </h1>
+                <p className="text-slate-600 font-light">
+                    Ringkasan sistem manajemen pengaduan masyarakat DIY
+                </p>
+            </div>
+            <div className="h-px bg-gradient-to-r from-slate-200 via-slate-300 to-transparent"></div>
         </div>
         
-        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 md:gap-6">
             <Suspense fallback={<CardSkeleton />}>
                 <TotalComplaintsCard />
             </Suspense>
             <Suspense fallback={<CardSkeleton />}>
                 <WeeklyComplaintsCard />
             </Suspense>
+            <Suspense fallback={<CardSkeleton />}>
+                <ResolutionTimeCard />
+            </Suspense>
+            <Suspense fallback={<CardSkeleton />}>
+                <PerformanceCard />
+            </Suspense>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 md:gap-8">
+        <div className="mt-10 space-y-8">
             <Suspense fallback={<DashboardContentSkeleton />}>
                 <MainDashboardContent />
             </Suspense>
@@ -190,7 +290,7 @@ export default function DashboardHomePage() {
   );
 }
 
-// --- Skeleton Components ---
+
 
 function DashboardContentSkeleton() {
     return (

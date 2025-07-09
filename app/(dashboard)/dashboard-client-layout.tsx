@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+
 import Header from '@/components/shared/Header';
-import Sidebar from '@/components/shared/Sidebar';
+import ProfessionalSidebar from '@/components/shared/ProfessionalSidebar';
 import { User } from '@supabase/supabase-js';
 import { cn } from '@/lib/utils';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 interface DashboardClientLayoutProps {
     children: React.ReactNode;
@@ -13,24 +15,34 @@ interface DashboardClientLayoutProps {
 }
 
 export default function DashboardClientLayout({ children, user, userRole }: DashboardClientLayoutProps) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const router = useRouter();
+    const supabase = createClient();
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        router.push('/login');
+    };
 
     return (
-        <div className="relative min-h-screen bg-gray-100">
-            <div className="absolute inset-0 -z-10 h-full w-full bg-gray-100 bg-[linear-gradient(to_right,#e0e0e0_1px,transparent_1px),linear-gradient(to_bottom,#e0e0e0_1px,transparent_1px)] bg-[size:6rem_4rem]">
-                <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_600px_at_50%_100px,#c9d8ff,transparent)]"></div>
+        <div className="relative min-h-screen bg-slate-50 flex">
+            {/* Sophisticated Background Pattern */}
+            <div className="absolute inset-0 -z-10 h-full w-full">
+                {/* Subtle Grid Pattern */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                {/* Clean Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/90 to-slate-100/40"></div>
             </div>
-            <Sidebar 
-                userRole={userRole} 
-                isCollapsed={isCollapsed}
-                onToggle={() => setIsCollapsed(!isCollapsed)}
+            
+            {/* Professional Sidebar with Aceternity */}
+            <ProfessionalSidebar 
+                userRole={userRole}
+                userName={user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Administrator'}
+                userEmail={user?.email || 'admin@jogjakota.go.id'}
+                onLogout={handleLogout}
             />
-            <div 
-                className={cn(
-                    "flex flex-col min-h-screen transition-[margin-left] duration-300",
-                    isCollapsed ? "ml-14" : "ml-64"
-                )}
-            >
+            
+            {/* Main Content Area */}
+            <div className="flex flex-1 flex-col min-h-screen">
                 <Header 
                     user={user}
                 />

@@ -39,54 +39,126 @@ const indonesianLastNames = [
   'Adiputra', 'Anggraini', 'Saputra', 'Melati', 'Pratama', 'Safitri', 'Putra', 'Indrasari'
 ];
 
-// Realistic complaint templates for Yogyakarta context
-const complaintTemplates = [
+// Realistic complaint templates for Yogyakarta context - organized by category
+const complaintTemplatesByCategory = {
   // Infrastructure complaints
-  'Jalan di {location} rusak parah, banyak lubang yang membahayakan pengendara motor dan mobil.',
-  'Lampu penerangan jalan di {location} sudah mati lebih dari 2 minggu, sangat gelap di malam hari.',
-  'Saluran air di {location} tersumbat sampah, sering banjir saat hujan deras.',
-  'Trotoar di {location} rusak dan berlubang, berbahaya untuk pejalan kaki.',
-  'Jembatan penyeberangan di {location} kotor dan kurang terawat.',
+  infrastructure: [
+    'Jalan di {location} rusak parah, banyak lubang yang membahayakan pengendara motor dan mobil.',
+    'Lampu penerangan jalan di {location} sudah mati lebih dari 2 minggu, sangat gelap di malam hari.',
+    'Saluran air di {location} tersumbat sampah, sering banjir saat hujan deras.',
+    'Trotoar di {location} rusak dan berlubang, berbahaya untuk pejalan kaki.',
+    'Jembatan penyeberangan di {location} kotor dan kurang terawat.',
+    'Pohon tumbang menghalangi jalan di {location} setelah hujan kemarin.',
+    'Fasilitas toilet umum di {location} kotor dan tidak terawat dengan baik.',
+    'Tempat sampah di {location} sudah penuh dan menimbulkan bau tidak sedap.',
+    'Halte bus di {location} rusak dan tidak ada tempat duduk.',
+  ],
   
-  // Public service complaints
-  'Pelayanan di kantor kelurahan {location} sangat lambat, sudah antri 3 jam belum selesai.',
-  'Petugas keamanan di {location} kurang responsif terhadap gangguan ketertiban.',
-  'Fasilitas toilet umum di {location} kotor dan tidak terawat dengan baik.',
-  'Tempat sampah di {location} sudah penuh dan menimbulkan bau tidak sedap.',
-  'Halte bus di {location} rusak dan tidak ada tempat duduk.',
+  // Transportation complaints  
+  transportation: [
+    'Bus Trans Jogja sering telat dan tidak sesuai jadwal di halte {location}.',
+    'Ojek online sulit ditemukan di area {location}, terutama malam hari.',
+    'Tempat parkir motor di {location} tidak aman, sering terjadi pencurian.',
+    'Kemacetan parah di {location} setiap jam kerja karena kurang rambu lalu lintas.',
+    'Parkir liar di {location} mengganggu arus lalu lintas.',
+  ],
   
-  // Environmental complaints
-  'Banyak pedagang yang membuang limbah sembarangan di sungai dekat {location}.',
-  'Polusi udara di {location} sangat parah akibat asap kendaraan dan pabrik.',
-  'Suara bising dari konstruksi di {location} mengganggu warga sekitar.',
-  'Pohon tumbang menghalangi jalan di {location} setelah hujan kemarin.',
-  'Pencemaran air di {location} karena limbah industri.',
+  // Healthcare complaints
+  healthcare: [
+    'Puskesmas di {location} kekurangan obat-obatan dasar untuk pasien.',
+    'Antrian vaksinasi di {location} tidak tertib dan berdesak-desakan.',
+    'Tenaga medis di {location} kurang dan waktu tunggu sangat lama.',
+    'Website layanan online pemda sering error dan sulit diakses.',
+  ],
+  
+  // Education complaints
+  education: [
+    'Fasilitas sekolah di {location} rusak dan membahayakan keselamatan siswa.',
+    'Ojek online sulit ditemukan di area {location} sekitar kampus, terutama malam hari.',
+    'Tempat parkir motor di {location} tidak aman, sering terjadi pencurian.',
+  ],
+  
+  // Environment complaints
+  environment: [
+    'Banyak pedagang yang membuang limbah sembarangan di sungai dekat {location}.',
+    'Polusi udara di {location} sangat parah akibat asap kendaraan dan pabrik.',
+    'Suara bising dari konstruksi di {location} mengganggu warga sekitar.',
+    'Pencemaran air di {location} karena limbah industri.',
+  ],
   
   // Social issues
-  'Anak jalanan sering mengganggu pengendara di traffic light {location}.',
-  'Premanisme di pasar {location} membuat pedagang tidak nyaman berjualan.',
-  'Parkir liar di {location} mengganggu arus lalu lintas.',
-  'Kegiatan karaoke hingga larut malam di {location} mengganggu istirahat warga.',
-  'Pengemis asing berkeliaran di area wisata {location}.',
+  social: [
+    'Anak jalanan sering mengganggu pengendara di traffic light {location}.',
+    'Premanisme di pasar {location} membuat pedagang tidak nyaman berjualan.',
+    'Kegiatan karaoke hingga larut malam di {location} mengganggu istirahat warga.',
+    'Pengemis asing berkeliaran di area wisata {location}.',
+  ],
   
-  // Healthcare and education
-  'Puskesmas di {location} kekurangan obat-obatan dasar untuk pasien.',
-  'Fasilitas sekolah di {location} rusak dan membahayakan keselamatan siswa.',
-  'Antrian vaksinasi di {location} tidak tertib dan berdesak-desakan.',
-  'Tenaga medis di {location} kurang dan waktu tunggu sangat lama.',
+  // Public service complaints
+  public_service: [
+    'Pelayanan di kantor kelurahan {location} sangat lambat, sudah antri 3 jam belum selesai.',
+    'Petugas keamanan di {location} kurang responsif terhadap gangguan ketertiban.',
+    'Proses pengurusan KTP di {location} berbelit-belit dan memakan waktu lama.',
+    'Biaya retribusi di {location} terlalu tinggi dan memberatkan pedagang kecil.',
+    'Informasi persyaratan administrasi di {location} tidak jelas dan membingungkan.',
+  ]
+};
+
+// Function to get appropriate category based on complaint content
+function getCategoryForComplaint(complaintText: string, categories: Category[]): Category {
+  // Create mapping from template categories to actual database category names
+  const categoryMappings: Record<string, string> = {
+    'infrastructure': 'Infrastructure',
+    'transportation': 'Transportation', 
+    'healthcare': 'Healthcare',
+    'education': 'Education',
+    'environment': 'Infrastructure', // Map environment to Infrastructure
+    'social': 'Infrastructure', // Map social issues to Infrastructure
+    'public_service': 'Healthcare' // Map public service to Healthcare
+  };
   
-  // Transportation
-  'Bus Trans Jogja sering telat dan tidak sesuai jadwal di halte {location}.',
-  'Ojek online sulit ditemukan di area {location}, terutama malam hari.',
-  'Tempat parkir motor di {location} tidak aman, sering terjadi pencurian.',
-  'Kemacetan parah di {location} setiap jam kerja karena kurang rambu lalu lintas.',
+  // Find which template category this complaint belongs to
+  for (const [templateCategory, templates] of Object.entries(complaintTemplatesByCategory)) {
+    for (const template of templates) {
+      // Check if complaint matches template (ignoring {location} placeholder)
+      const templateWithoutLocation = template.replace('{location}', '').toLowerCase();
+      const complaintLower = complaintText.toLowerCase();
+      
+      // Simple matching - check if key words from template exist in complaint
+      const templateWords = templateWithoutLocation.split(' ').filter(word => word.length > 3);
+      const matchingWords = templateWords.filter(word => complaintLower.includes(word));
+      
+      if (matchingWords.length >= 2) { // At least 2 matching words
+        const dbCategoryName = categoryMappings[templateCategory];
+        const category = categories.find(c => c.name === dbCategoryName);
+        if (category) return category;
+      }
+    }
+  }
   
-  // Administrative services
-  'Proses pengurusan KTP di {location} berbelit-belit dan memakan waktu lama.',
-  'Website layanan online pemda sering error dan sulit diakses.',
-  'Biaya retribusi di {location} terlalu tinggi dan memberatkan pedagang kecil.',
-  'Informasi persyaratan administrasi di {location} tidak jelas dan membingungkan.'
-];
+  // Fallback: use keyword matching for common terms
+  const keywordMappings: Record<string, string[]> = {
+    'Infrastructure': ['jalan', 'lampu', 'trotoar', 'jembatan', 'saluran', 'pohon', 'toilet', 'sampah', 'halte', 'limbah', 'polusi', 'bising', 'preman', 'karaoke'],
+    'Transportation': ['bus', 'ojek', 'parkir', 'macet', 'lalu lintas', 'kendaraan', 'motor', 'trans jogja'],
+    'Healthcare': ['puskesmas', 'obat', 'medis', 'vaksin', 'dokter', 'rumah sakit', 'pelayanan', 'website', 'online'],
+    'Education': ['sekolah', 'kampus', 'universitas', 'siswa', 'mahasiswa', 'pendidikan', 'fasilitas sekolah']
+  };
+  
+  for (const [categoryName, keywords] of Object.entries(keywordMappings)) {
+    for (const keyword of keywords) {
+      if (complaintText.toLowerCase().includes(keyword)) {
+        const category = categories.find(c => c.name === categoryName);
+        if (category) return category;
+      }
+    }
+  }
+  
+  // Ultimate fallback: return Infrastructure category (most common)
+  return categories.find(c => c.name === 'Infrastructure') || categories[0];
+}
+
+// Flattened array for backward compatibility
+const complaintTemplates = Object.values(complaintTemplatesByCategory).flat();
 
 // Yogyakarta locations for more realistic context
 const yogyakartaLocations = [
@@ -143,12 +215,19 @@ async function main() {
   if (newUsers.length > 0) {
     for (let i = 0; i < 200; i++) {
         const randomUser = faker.helpers.arrayElement(newUsers);
-        const randomCategory = faker.helpers.arrayElement(categories);
+        
+        // First pick a random category type, then get specific template and category
+        const categoryTypes = Object.keys(complaintTemplatesByCategory) as Array<keyof typeof complaintTemplatesByCategory>;
+        const randomCategoryType = faker.helpers.arrayElement(categoryTypes);
+        const randomTemplate = faker.helpers.arrayElement(complaintTemplatesByCategory[randomCategoryType]);
+        
         const randomLocation = faker.helpers.arrayElement(yogyakartaLocations);
-        const randomTemplate = faker.helpers.arrayElement(complaintTemplates);
         
         // Replace {location} placeholder with actual Yogyakarta location
         const complaintText = randomTemplate.replace('{location}', randomLocation);
+        
+        // Get appropriate category based on the complaint content
+        const appropriateCategory = getCategoryForComplaint(complaintText, categories);
         
         // Yogyakarta bounds (more precise)
         const diyBounds = {
@@ -224,7 +303,7 @@ async function main() {
          }
          
          newComplaints.push({
-             category_id: randomCategory.id,
+             category_id: appropriateCategory.id,
              text_content: complaintText,
              sentiment: sentiment,
              status: status,
