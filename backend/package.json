@@ -1,0 +1,28 @@
+{
+  "name": "pndwjogja-mis-backend",
+  "version": "1.0.0",
+  "description": "Backend utilities and database scripts for PNDW JOGJA MIS",
+  "main": "index.js",
+  "scripts": {
+    "check-admin": "npx tsx scripts/check-admin.ts",
+    "check-login": "npx tsx scripts/check-login.ts", 
+    "clean-dummy": "npx tsx scripts/clean-dummy-data.ts",
+    "debug-users": "npx tsx scripts/debug-users.ts",
+    "generate-dummy": "npx tsx scripts/generate-dummy-data.ts",
+    "list-users": "npx tsx scripts/list-users.ts",
+    "db:migrate": "supabase db reset",
+    "db:generate-types": "supabase gen types typescript --local > lib/types/supabase.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.43.4",
+    "@google/generative-ai": "^0.11.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.15.7",
+    "typescript": "^5"
+  },
+  "keywords": ["backend", "supabase", "database", "scripts"],
+  "author": "PNDW JOGJA Development Team",
+  "license": "MIT"
+} 
