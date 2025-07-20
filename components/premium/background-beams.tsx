@@ -1,5 +1,4 @@
 "use client";
-import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 
 export const BackgroundBeams = ({ className }: { className?: string }) => {

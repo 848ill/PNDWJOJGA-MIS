@@ -7,7 +7,6 @@ import { Activity, Users, LineChartIcon, BrainCircuitIcon, Clock, TrendingUp } f
 import DashboardMapWrapper from '@/components/dashboard/DashboardMapWrapper';
 import { MapPlaceholder } from '@/components/dashboard/MapPlaceholder';
 import { ComplaintRow } from '@/components/dashboard/ComplaintsTable';
-import { TextReveal } from '@/components/premium';
 
 async function getTotalComplaints() {
   const supabase = createAdminSupabaseClient();
@@ -94,20 +93,20 @@ async function getRecentComplaintData() { //page minta ke db buat ambil data pen
 async function TotalComplaintsCard() {
     const total = await getTotalComplaints();
     return (
-        <Card className="executive-card animate-fade-in-up group">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                <CardTitle className="text-sm font-medium text-slate-700 tracking-wide uppercase">
+        <Card className="executive-card group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <CardTitle className="text-sm font-medium premium-text tracking-wide uppercase">
                     Total Pengaduan
                 </CardTitle>
-                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-slate-100 transition-colors duration-300">
-                    <Activity className="h-4 w-4 text-slate-600" />
+                <div className="p-2 bg-muted rounded-lg group-hover:bg-muted/80 transition-colors duration-200">
+                    <Activity className="h-4 w-4 text-muted-foreground" />
                 </div>
             </CardHeader>
             <CardContent className="pt-0">
-                <div className="text-2xl font-bold text-slate-900 metric-number">{total.toLocaleString()}</div>
-                <div className="text-xs text-slate-500 mt-1 font-medium">Seluruh pengaduan terdaftar</div>
-                <div className="w-full bg-slate-200 h-0.5 rounded-full mt-3">
-                    <div className="w-full bg-slate-400 h-0.5 rounded-full"></div>
+                <div className="text-3xl metric-number">{total.toLocaleString()}</div>
+                <div className="text-xs premium-text mt-2">Seluruh pengaduan terdaftar</div>
+                <div className="w-full bg-muted h-0.5 rounded-full mt-4">
+                    <div className="w-full bg-foreground/20 h-0.5 rounded-full"></div>
                 </div>
             </CardContent>
         </Card>
@@ -117,20 +116,20 @@ async function TotalComplaintsCard() {
 async function WeeklyComplaintsCard() {
     const total = await getWeeklyComplaints();
     return (
-        <Card className="executive-card animate-fade-in-up [animation-delay:100ms] group">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                <CardTitle className="text-sm font-medium text-slate-700 tracking-wide uppercase">
+        <Card className="executive-card group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <CardTitle className="text-sm font-medium premium-text tracking-wide uppercase">
                     Aktivitas Terbaru
                 </CardTitle>
-                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-slate-100 transition-colors duration-300">
-                    <Users className="h-4 w-4 text-slate-600" />
+                <div className="p-2 bg-muted rounded-lg group-hover:bg-muted/80 transition-colors duration-200">
+                    <Users className="h-4 w-4 text-muted-foreground" />
                 </div>
             </CardHeader>
             <CardContent className="pt-0">
-                <div className="text-2xl font-bold text-slate-900 metric-number">{total.toLocaleString()}</div>
-                <div className="text-xs text-slate-500 mt-1 font-medium">7 hari terakhir</div>
-                <div className="w-full bg-slate-200 h-0.5 rounded-full mt-3">
-                    <div className="w-4/5 bg-slate-500 h-0.5 rounded-full"></div>
+                <div className="text-3xl metric-number">{total.toLocaleString()}</div>
+                <div className="text-xs premium-text mt-2">7 hari terakhir</div>
+                <div className="w-full bg-muted h-0.5 rounded-full mt-4">
+                    <div className="w-4/5 bg-foreground/20 h-0.5 rounded-full"></div>
                 </div>
             </CardContent>
         </Card>
@@ -141,20 +140,20 @@ async function ResolutionTimeCard() {
     // Mock data - replace with actual query
     const avgTime = "2.3";
     return (
-        <Card className="executive-card animate-fade-in-up [animation-delay:200ms] group">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                <CardTitle className="text-sm font-medium text-slate-700 tracking-wide uppercase">
+        <Card className="executive-card group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <CardTitle className="text-sm font-medium premium-text tracking-wide uppercase">
                     Rata-rata Penyelesaian
                 </CardTitle>
-                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-slate-100 transition-colors duration-300">
-                    <Clock className="h-4 w-4 text-slate-600" />
+                <div className="p-2 bg-muted rounded-lg group-hover:bg-muted/80 transition-colors duration-200">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
                 </div>
             </CardHeader>
             <CardContent className="pt-0">
-                <div className="text-2xl font-bold text-slate-900 metric-number">{avgTime} hari</div>
-                <div className="text-xs text-slate-500 mt-1 font-medium">Waktu penyelesaian rata-rata</div>
-                <div className="w-full bg-slate-200 h-0.5 rounded-full mt-3">
-                    <div className="w-3/5 bg-slate-600 h-0.5 rounded-full"></div>
+                <div className="text-3xl metric-number">{avgTime} hari</div>
+                <div className="text-xs premium-text mt-2">Waktu penyelesaian rata-rata</div>
+                <div className="w-full bg-muted h-0.5 rounded-full mt-4">
+                    <div className="w-3/5 bg-foreground/20 h-0.5 rounded-full"></div>
                 </div>
             </CardContent>
         </Card>
@@ -165,20 +164,20 @@ async function PerformanceCard() {
     // Mock data - replace with actual query
     const performance = "94.2";
     return (
-        <Card className="executive-card animate-fade-in-up [animation-delay:300ms] group">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                <CardTitle className="text-sm font-medium text-slate-700 tracking-wide uppercase">
+        <Card className="executive-card group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <CardTitle className="text-sm font-medium premium-text tracking-wide uppercase">
                     Kinerja Sistem
                 </CardTitle>
-                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-slate-100 transition-colors duration-300">
-                    <TrendingUp className="h-4 w-4 text-slate-600" />
+                <div className="p-2 bg-muted rounded-lg group-hover:bg-muted/80 transition-colors duration-200">
+                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
                 </div>
             </CardHeader>
             <CardContent className="pt-0">
-                <div className="text-2xl font-bold text-slate-900 metric-number">{performance}%</div>
-                <div className="text-xs text-slate-500 mt-1 font-medium">Rating efisiensi keseluruhan</div>
-                <div className="w-full bg-slate-200 h-0.5 rounded-full mt-3">
-                    <div className="w-5/6 bg-slate-700 h-0.5 rounded-full"></div>
+                <div className="text-3xl metric-number">{performance}%</div>
+                <div className="text-xs premium-text mt-2">Rating efisiensi keseluruhan</div>
+                <div className="w-full bg-muted h-0.5 rounded-full mt-4">
+                    <div className="w-5/6 bg-foreground/20 h-0.5 rounded-full"></div>
                 </div>
             </CardContent>
         </Card>
@@ -203,7 +202,7 @@ async function MainDashboardContent() {
                     </CardContent>
                 </Card>
             }>
-                <Card className="executive-card animate-fade-in-up [animation-delay:400ms]">
+                <Card className="executive-card">
                     <CardHeader className="pb-4">
                         <CardTitle className="text-lg font-semibold sophisticated-text">Distribusi Geografis</CardTitle>
                         <CardDescription className="text-slate-600">Pemetaan pengaduan real-time dan analisis lokasi</CardDescription>
@@ -216,7 +215,7 @@ async function MainDashboardContent() {
             
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="executive-card animate-fade-in-up [animation-delay:500ms]">
+                <Card className="executive-card">
                     <CardHeader className="pb-4">
                         <CardTitle className="flex items-center sophisticated-text font-semibold">
                             <LineChartIcon className="mr-3 h-5 w-5 text-slate-600" /> 
@@ -231,7 +230,7 @@ async function MainDashboardContent() {
                     </CardContent>
                 </Card>
                 
-                <Card className="executive-card animate-fade-in-up [animation-delay:600ms]"> 
+                <Card className="executive-card"> 
                     <CardHeader className="pb-4">
                         <CardTitle className="flex items-center sophisticated-text font-semibold">
                             <BrainCircuitIcon className="mr-3 h-5 w-5 text-slate-600" /> 
@@ -254,16 +253,16 @@ async function MainDashboardContent() {
 export default function DashboardHomePage() {
   return (
     <div className="relative z-0 flex flex-1 flex-col gap-10 p-6 md:p-10">
-        <div className="animate-fade-in-up space-y-3">
-            <div className="space-y-1">
-                <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+        <div className="space-y-6">
+            <div className="space-y-2">
+                <h1 className="text-3xl font-semibold tracking-tight sophisticated-text">
                     Dasbor Eksekutif
                 </h1>
-                <p className="text-slate-600 font-light">
+                <p className="premium-text">
                     Ringkasan sistem manajemen pengaduan masyarakat DIY
                 </p>
             </div>
-            <div className="h-px bg-gradient-to-r from-slate-200 via-slate-300 to-transparent"></div>
+            <div className="h-px bg-border"></div>
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 md:gap-6">

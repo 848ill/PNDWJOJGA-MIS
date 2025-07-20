@@ -1,6 +1,7 @@
 'use client'; 
 
 import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import { 
   TrendingUp, 
   AlertTriangle, 
@@ -27,6 +28,23 @@ interface AiInsightsDisplayProps {
 }
 
 export const AiInsightsDisplay = ({ insights, isLoading }: AiInsightsDisplayProps) => {
+  const [currentTime, setCurrentTime] = useState<string>('');
+  
+  useEffect(() => {
+    // Set initial time on client side to prevent hydration mismatch
+    setCurrentTime(new Date().toLocaleTimeString('id-ID'));
+    
+    // Only start timer if there's actual data to show
+    if (insights && insights.length > 0) {
+      // Optional: Update time every 5 minutes (reduced for performance)
+      const interval = setInterval(() => {
+        setCurrentTime(new Date().toLocaleTimeString('id-ID'));
+      }, 300000); // Update every 5 minutes
+      
+      return () => clearInterval(interval);
+    }
+  }, [insights]);
+
   // Generate enhanced AI insights dengan data visualization compatibility
   const generateSmartInsights = () => {
     if (!insights || insights.length === 0) {
@@ -116,17 +134,19 @@ export const AiInsightsDisplay = ({ insights, isLoading }: AiInsightsDisplayProp
   return (
     <div className="space-y-3">
       {smartInsights.map((insight, index) => (
-        <Card key={index} className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow">
+        <Card key={index} className="premium-card border-l-2 border-l-border hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0 mt-0.5">
-                {insight.icon}
+                <span className="text-muted-foreground">
+                  {insight.icon}
+                </span>
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                <h4 className="text-sm font-semibold sophisticated-text mb-1">
                   {insight.title}
                 </h4>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm premium-text leading-relaxed">
                   {insight.content}
                 </p>
               </div>
@@ -135,11 +155,11 @@ export const AiInsightsDisplay = ({ insights, isLoading }: AiInsightsDisplayProp
         </Card>
       ))}
       
-      <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+      <div className="mt-4 p-3 bg-muted/30 rounded-lg border border-border">
         <div className="flex items-center space-x-2">
-          <Clock className="h-4 w-4 text-blue-600" />
-          <span className="text-xs text-blue-700 font-medium">
-            Data diperbarui secara real-time • Terakhir: {new Date().toLocaleTimeString('id-ID')}
+          <Clock className="h-4 w-4 text-muted-foreground" />
+          <span className="text-xs premium-text font-medium">
+            Data diperbarui secara real-time{currentTime && ` • Terakhir: ${currentTime}`}
           </span>
         </div>
       </div>

@@ -9,7 +9,7 @@ import {
     getPaginationRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import { motion } from 'framer-motion';
+
 import { useCallback } from 'react';
 
 import {
@@ -87,19 +87,7 @@ export function DataTable<TData, TValue>({
                             </TableRow>
                         ))}
                     </TableHeader>
-                    <motion.tbody
-                        initial="initial"
-                        animate="animate"
-                        variants={{
-                            initial: { opacity: 0 },
-                            animate: {
-                                opacity: 1,
-                                transition: {
-                                    staggerChildren: 0.05,
-                                },
-                            },
-                        }}
-                    >
+                    <tbody className="animate-fade-in-up">
                         {isPending ? (
                             Array.from({ length: 5 }).map((_, i) => (
                                 <TableRow key={i}>
@@ -112,14 +100,10 @@ export function DataTable<TData, TValue>({
                             ))
                         ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <motion.tr
+                                <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && 'selected'}
-                                    variants={{
-                                        initial: { opacity: 0, y: 20 },
-                                        animate: { opacity: 1, y: 0 },
-                                    }}
-                                    layout
+                                    className="animate-slide-in-up"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
@@ -129,7 +113,7 @@ export function DataTable<TData, TValue>({
                                             )}
                                         </TableCell>
                                     ))}
-                                </motion.tr>
+                                </TableRow>
                             ))
                         ) : (
                             <TableRow>
@@ -141,7 +125,7 @@ export function DataTable<TData, TValue>({
                                 </TableCell>
                             </TableRow>
                         )}
-                    </motion.tbody>
+                    </tbody>
                 </Table>
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">

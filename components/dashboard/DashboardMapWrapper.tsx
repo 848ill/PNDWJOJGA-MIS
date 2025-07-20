@@ -25,6 +25,18 @@ export default function DashboardMapWrapper({ complaints }: DashboardMapProps) {
   // Add a fallback for the complaints prop
   const validComplaints = Array.isArray(complaints) ? complaints : [];
 
+  // If no complaints with location data, show placeholder instead of loading heavy map
+  if (validComplaints.length === 0) {
+    return (
+      <div className="h-full w-full rounded-xl overflow-hidden border border-slate-200/50 bg-white shadow-sm flex items-center justify-center">
+        <div className="text-center p-8 text-gray-500">
+          <div className="text-sm font-medium">Belum Ada Data Pengaduan</div>
+          <div className="text-xs mt-1">Saat ini belum ada pengaduan dengan koordinat lokasi yang valid untuk ditampilkan di peta distribusi geografis.</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full w-full rounded-xl overflow-hidden border border-slate-200/50 bg-white shadow-sm">
       <ComplaintMap 

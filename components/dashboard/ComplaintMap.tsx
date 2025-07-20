@@ -162,59 +162,59 @@ export default function ComplaintMap({ complaints, center, zoom }: ComplaintMapP
                 </div>
             )}
             
-            {/* Executive-level Legend */}
-            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-xl rounded-lg p-4 shadow-lg border border-slate-200/50 z-[1000] min-w-[160px]">
+            {/* Premium Executive-level Legend */}
+            <div className="absolute bottom-4 left-4 bg-background/95 backdrop-blur-xl rounded-lg p-4 shadow-lg border border-border z-[1000] min-w-[160px]">
                 <div className="space-y-3">
-                    <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide text-center">
+                    <div className="text-xs font-semibold sophisticated-text uppercase tracking-wide text-center">
                         Tingkat Prioritas
                     </div>
                     
                     <div className="space-y-2.5">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-red-500 flex-shrink-0"></div>
-                                <span className="text-xs font-medium text-slate-700">Tinggi</span>
+                                <div className="w-3 h-3 rounded-full bg-foreground flex-shrink-0"></div>
+                                <span className="text-xs font-medium sophisticated-text">Tinggi</span>
                             </div>
-                            <span className="text-xs text-slate-500 font-mono">
+                            <span className="text-xs premium-text font-mono">
                                 {validComplaints.filter(c => c.priority === 'high').length}
                             </span>
                         </div>
                         
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-orange-500 flex-shrink-0"></div>
-                                <span className="text-xs font-medium text-slate-700">Sedang</span>
+                                <div className="w-3 h-3 rounded-full bg-muted-foreground flex-shrink-0"></div>
+                                <span className="text-xs font-medium sophisticated-text">Sedang</span>
                             </div>
-                            <span className="text-xs text-slate-500 font-mono">
+                            <span className="text-xs premium-text font-mono">
                                 {validComplaints.filter(c => c.priority === 'medium').length}
                             </span>
                         </div>
                         
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-green-500 flex-shrink-0"></div>
-                                <span className="text-xs font-medium text-slate-700">Rendah</span>
+                                <div className="w-3 h-3 rounded-full bg-muted-foreground/50 flex-shrink-0"></div>
+                                <span className="text-xs font-medium sophisticated-text">Rendah</span>
                             </div>
-                            <span className="text-xs text-slate-500 font-mono">
+                            <span className="text-xs premium-text font-mono">
                                 {validComplaints.filter(c => c.priority === 'low').length}
                             </span>
                         </div>
                     </div>
                     
-                    <div className="pt-2 border-t border-slate-200">
-                        <div className="text-xs text-slate-500 text-center font-medium">
+                    <div className="pt-2 border-t border-border">
+                        <div className="text-xs premium-text text-center font-medium">
                             Total: <span className="font-mono">{validComplaints.length}</span> pengaduan
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Map Info Panel */}
-            <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-xl rounded-lg p-3 shadow-lg border border-slate-200/50 z-[1000]">
-                <div className="text-xs text-slate-600 font-medium">
+            {/* Premium Map Info Panel */}
+            <div className="absolute top-4 right-4 bg-background/95 backdrop-blur-xl rounded-lg p-3 shadow-lg border border-border z-[1000]">
+                <div className="text-xs sophisticated-text font-medium">
                     📍 Daerah Istimewa Yogyakarta
                 </div>
-                <div className="text-xs text-slate-500 mt-1">
+                <div className="text-xs premium-text mt-1">
                     Real-time monitoring
                 </div>
             </div>

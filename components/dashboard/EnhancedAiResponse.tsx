@@ -24,19 +24,14 @@ import {
   TrendingUp, 
   TrendingDown, 
   AlertTriangle, 
-  CheckCircle, 
-  Info, 
+  CheckCircle,
   Target,
-  MapPin,
   Clock,
-  Users,
   FileText,
   BarChart3,
   PieChart as PieChartIcon,
-  Download,
-  Share,
-  Lightbulb,
-  Flag
+
+  Lightbulb
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -74,22 +69,25 @@ const CHART_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#0
 const parseAiResponse = (content: string): AiAnalysis[] => {
   const analyses: AiAnalysis[] = [];
   
+  // Clean the content from markdown at the beginning
+  const cleanedContent = cleanMarkdown(content);
+  
   // Check if content contains data that can be visualized
-  const hasNumbers = /\d+/.test(content);
-  const hasCategories = /kategori|infrastruktur|kesehatan|transportasi|pendidikan/i.test(content);
-  const hasTrends = /meningkat|menurun|stabil|trend/i.test(content);
+  const hasNumbers = /\d+/.test(cleanedContent);
+  const hasCategories = /kategori|infrastruktur|kesehatan|transportasi|pendidikan/i.test(cleanedContent);
+  const hasTrends = /meningkat|menurun|stabil|trend/i.test(cleanedContent);
   
   // Executive Summary
   analyses.push({
     type: 'summary',
     title: 'Ringkasan Eksekutif',
-    content: extractExecutiveSummary(content),
-    metrics: extractKeyMetrics(content)
+    content: extractExecutiveSummary(cleanedContent),
+    metrics: extractKeyMetrics(cleanedContent)
   });
 
   // Data Visualization if applicable
   if (hasNumbers && hasCategories) {
-    const chartData = extractChartData(content);
+    const chartData = extractChartData(cleanedContent);
     if (chartData.length > 0) {
       analyses.push({
         type: 'insight',
@@ -106,7 +104,7 @@ const parseAiResponse = (content: string): AiAnalysis[] => {
     analyses.push({
       type: 'trend',
       title: 'Analisis Tren',
-      content: extractTrendAnalysis(content),
+      content: extractTrendAnalysis(),
       data: generateTrendData(),
       chartType: 'line'
     });
@@ -116,13 +114,13 @@ const parseAiResponse = (content: string): AiAnalysis[] => {
   analyses.push({
     type: 'recommendation',
     title: 'Rekomendasi Strategis',
-    content: extractRecommendations(content),
-    actionItems: extractActionItems(content),
+    content: extractRecommendations(),
+    actionItems: extractActionItems(),
     priority: 'high'
   });
 
   // Alerts if any
-  const alerts = extractAlerts(content);
+  const alerts = extractAlerts(cleanedContent);
   if (alerts.length > 0) {
     analyses.push({
       type: 'alert',
@@ -133,6 +131,17 @@ const parseAiResponse = (content: string): AiAnalysis[] => {
   }
 
   return analyses;
+};
+
+// Helper function to clean markdown from text
+const cleanMarkdown = (text: string): string => {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold **text**
+    .replace(/\*(.*?)\*/g, '$1')     // Remove italic *text*
+    .replace(/`(.*?)`/g, '$1')       // Remove inline code `text`
+    .replace(/#{1,6}\s/g, '')        // Remove headers
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove links, keep text
+    .trim();
 };
 
 // Helper functions to extract different types of content
@@ -226,15 +235,15 @@ const generateTrendData = (): ChartData[] => {
   ];
 };
 
-const extractTrendAnalysis = (content: string): string => {
+const extractTrendAnalysis = (): string => {
   return "Tren pengaduan menunjukkan peningkatan signifikan pada hari kerja, dengan puncak di hari Jumat. Pola ini mengindikasikan perlunya alokasi sumber daya yang lebih optimal.";
 };
 
-const extractRecommendations = (content: string): string => {
+const extractRecommendations = (): string => {
   return "Berdasarkan analisis data, disarankan untuk meningkatkan koordinasi antar dinas terkait dan memprioritaskan penanganan pengaduan infrastruktur yang memiliki dampak langsung terhadap masyarakat.";
 };
 
-const extractActionItems = (content: string): string[] => {
+const extractActionItems = (): string[] => {
   return [
     "Tingkatkan monitoring pengaduan kategori infrastruktur",
     "Koordinasi dengan Dinas PU untuk penanganan cepat",
@@ -258,12 +267,12 @@ const MetricCard: React.FC<{ metric: NonNullable<AiAnalysis['metrics']>[0] }> = 
     <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-600 font-medium">{metric.label}</p>
+          <p className="text-sm text-slate-700 font-semibold">{metric.label}</p>
           <p className={`text-2xl font-bold ${metric.color || 'text-slate-900'}`}>
             {metric.value}
           </p>
         </div>
-        <TrendIcon className={`h-5 w-5 ${metric.color || 'text-slate-400'}`} />
+        <TrendIcon className={`h-5 w-5 ${metric.color || 'text-slate-600'}`} />
       </div>
     </div>
   );
@@ -358,23 +367,13 @@ export const EnhancedAiResponse: React.FC<EnhancedAiResponseProps> = ({ content,
   };
 
   const getAnalysisColor = (type: AiAnalysis['type']) => {
-    switch (type) {
-      case 'summary': return 'text-blue-600';
-      case 'trend': return 'text-green-600';
-      case 'recommendation': return 'text-purple-600';
-      case 'alert': return 'text-red-600';
-      case 'insight': return 'text-orange-600';
-    }
+    // Premium 3-tone system: all icons use same sophisticated color
+    return 'text-muted-foreground';
   };
 
   const getBorderColor = (type: AiAnalysis['type']) => {
-    switch (type) {
-      case 'summary': return 'border-l-blue-500';
-      case 'trend': return 'border-l-green-500';
-      case 'recommendation': return 'border-l-purple-500';
-      case 'alert': return 'border-l-red-500';
-      case 'insight': return 'border-l-orange-500';
-    }
+    // Clean minimal borders - no colors, just subtle differentiation
+    return type === 'alert' ? 'border-l-foreground/20' : 'border-l-border';
   };
 
   return (
@@ -386,11 +385,10 @@ export const EnhancedAiResponse: React.FC<EnhancedAiResponseProps> = ({ content,
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
         >
-          <Card className={`border-l-4 ${getBorderColor(analysis.type)} shadow-sm hover:shadow-md transition-shadow`}>
+          <Card className={`premium-card border-l-2 ${getBorderColor(analysis.type)}`}>
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <span className={getAnalysisColor(analysis.type)}>
+              <CardTitle className="flex items-center gap-3 text-lg text-slate-900 font-semibold">
+                  <span className="text-slate-600">
                     {getAnalysisIcon(analysis.type)}
                   </span>
                   {analysis.title}
@@ -403,15 +401,6 @@ export const EnhancedAiResponse: React.FC<EnhancedAiResponseProps> = ({ content,
                     </Badge>
                   )}
                 </CardTitle>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm">
-                    <Share className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <Download className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
             </CardHeader>
             
             <CardContent className="space-y-4">
@@ -425,8 +414,8 @@ export const EnhancedAiResponse: React.FC<EnhancedAiResponseProps> = ({ content,
               )}
 
               {/* Content */}
-              <div className="prose prose-sm max-w-none">
-                <p className="text-slate-700 leading-relaxed">{analysis.content}</p>
+              <div className="max-w-none">
+                <p className="text-slate-800 leading-relaxed text-base font-medium">{analysis.content}</p>
               </div>
 
               {/* Chart */}
@@ -434,16 +423,16 @@ export const EnhancedAiResponse: React.FC<EnhancedAiResponseProps> = ({ content,
 
               {/* Action Items */}
               {analysis.actionItems && analysis.actionItems.length > 0 && (
-                <div className="mt-4 p-4 bg-slate-50 rounded-lg">
-                  <h4 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                    <Target className="h-4 w-4" />
+                <div className="mt-6 p-5 bg-muted/30 rounded-lg border border-border">
+                  <h4 className="text-slate-900 font-semibold mb-4 flex items-center gap-3">
+                    <Target className="h-4 w-4 text-slate-600" />
                     Langkah Tindak Lanjut
                   </h4>
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {analysis.actionItems.map((item, itemIndex) => (
-                      <li key={itemIndex} className="flex items-start gap-2">
+                      <li key={itemIndex} className="flex items-start gap-3">
                         <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-slate-700">{item}</span>
+                        <span className="text-sm text-slate-700 leading-relaxed font-medium">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -455,18 +444,18 @@ export const EnhancedAiResponse: React.FC<EnhancedAiResponseProps> = ({ content,
       ))}
 
       {/* Request More Charts Button */}
-      <Card className="border-dashed border-2 border-slate-300">
-        <CardContent className="flex flex-col items-center justify-center py-8 text-center">
-          <PieChartIcon className="h-12 w-12 text-slate-400 mb-4" />
-          <h3 className="text-lg font-semibold text-slate-700 mb-2">
+      <Card className="premium-card border-dashed border-2 border-border">
+        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+          <PieChartIcon className="h-10 w-10 text-slate-400 mb-6" />
+          <h3 className="text-lg text-slate-900 font-semibold mb-3">
             Butuh Visualisasi Lebih Detail?
           </h3>
-          <p className="text-sm text-slate-600 mb-4 max-w-md">
+          <p className="text-sm text-slate-700 mb-6 max-w-md leading-relaxed">
             Minta AI untuk membuat chart atau analisis khusus sesuai kebutuhan Anda
           </p>
           <Button 
             onClick={() => onRequestChart?.("Buatkan chart distribusi pengaduan berdasarkan wilayah dan waktu")}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5"
           >
             <BarChart3 className="h-4 w-4 mr-2" />
             Minta Chart Tambahan

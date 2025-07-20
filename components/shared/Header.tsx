@@ -87,7 +87,7 @@ const sampleSearchResults = [
     }
 ];
 
-export default function Header({ user }: HeaderProps) {
+export default function Header({ }: HeaderProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<typeof sampleSearchResults>([]);
     const [showSearchResults, setShowSearchResults] = useState(false);
@@ -227,7 +227,7 @@ export default function Header({ user }: HeaderProps) {
                             </div>
                         ) : (
                             <div className="p-4 text-center text-slate-500 text-sm">
-                                Tidak ada hasil ditemukan untuk "{searchQuery}"
+                                Tidak ada hasil ditemukan untuk &quot;{searchQuery}&quot;
                             </div>
                         )}
                     </div>

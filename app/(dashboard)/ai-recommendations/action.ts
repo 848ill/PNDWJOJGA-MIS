@@ -19,13 +19,26 @@ const API_KEY = process.env.GEMINI_API_KEY!;
 
 
 async function getComplaintContext() {
+    console.log('🔍 [DEBUG] getComplaintContext called');
     const supabase = createAdminSupabaseClient();
+    console.log('🔍 [DEBUG] Supabase client created');
+    
     const { data: complaints, error } = await supabase
         .from('complaints')
         .select('id, submitted_at, text_content, status, priority, latitude, longitude, categories(name)')
-        .in('status', ['open', 'in progress'])
+        .in('status', ['open', 'in_progress'])
         .order('submitted_at', { ascending: false })
         .limit(20);
+    
+    console.log('🔍 [DEBUG] Query result:', { 
+        complaintsCount: complaints?.length || 0, 
+        error: error?.message,
+        firstComplaint: complaints?.[0] ? {
+            id: complaints[0].id,
+            status: complaints[0].status,
+            category: (complaints[0].categories as any)?.name
+        } : null
+    });
 
     if (error) {
         console.error('Supabase error:', error);
@@ -42,8 +55,38 @@ async function getComplaintContext() {
 }
 
 export async function generateRecommendations(history: ChatHistoryItem[], newMessage: string) {
+    console.log('🤖 [DEBUG] generateRecommendations called with message:', newMessage);
     
-    const normalizedMessage = newMessage.toLowerCase().replace(/\s+/g, '');
+    const normalizedMessage = newMessage.toLowerCase().trim().replace(/\s+/g, ' ');
+    console.log('🤖 [DEBUG] Normalized message:', normalizedMessage);
+    
+    // Handle simple greetings and casual inputs
+    const greetings = ['halo', 'hai', 'hello', 'hi', 'selamat', 'pagi', 'siang', 'sore', 'malam'];
+    const isGreeting = greetings.some(greeting => normalizedMessage.includes(greeting)) && normalizedMessage.length <= 20;
+    
+    console.log('🤖 [DEBUG] Greeting check:', { isGreeting, messageLength: normalizedMessage.length });
+    
+    if (isGreeting) {
+        console.log('🤖 [DEBUG] Returning greeting response');
+        return { 
+            success: true, 
+            report: "Halo! Saya PAWA Enhanced, asisten analisis data pemerintah DIY. Ada yang bisa saya bantu analisis hari ini? 😊" 
+        };
+    }
+    
+    // Handle simple questions or short inputs
+    const isShortMessage = normalizedMessage.length <= 10 && !normalizedMessage.includes('analisis') && !normalizedMessage.includes('data');
+    console.log('🤖 [DEBUG] Short message check:', { isShortMessage, length: normalizedMessage.length });
+    
+    if (isShortMessage) {
+        console.log('🤖 [DEBUG] Returning short message response');
+        return { 
+            success: true, 
+            report: "Bisa lebih spesifik? Saya bisa membantu analisis data pengaduan, tren, atau rekomendasi strategis untuk pemerintah DIY." 
+        };
+    }
+    
+    // Special case for grade requests
     if (
         normalizedMessage.includes('nilai') &&
         (normalizedMessage.includes('aplikasi') || normalizedMessage.includes('proyek'))
@@ -54,6 +97,68 @@ export async function generateRecommendations(history: ChatHistoryItem[], newMes
         };
     }
 
+    // Check if question is data-related (should get access to complaint data)
+    const isDataRelated = normalizedMessage.includes('analisis') || 
+                         normalizedMessage.includes('laporan') || 
+                         normalizedMessage.includes('rekomendasi') ||
+                         normalizedMessage.includes('tren') ||
+                         normalizedMessage.includes('insight') ||
+                         normalizedMessage.includes('detail') ||
+                         normalizedMessage.includes('grafik') ||
+                         normalizedMessage.includes('chart') ||
+                         normalizedMessage.includes('distribusi') ||
+                         normalizedMessage.includes('kategori') ||
+                         normalizedMessage.includes('statistik') ||
+                         normalizedMessage.includes('data') ||
+                         normalizedMessage.includes('visualisasi') ||
+                         normalizedMessage.includes('peta') ||
+                         normalizedMessage.includes('ringkasan') ||
+                         normalizedMessage.includes('pengaduan') ||
+                         normalizedMessage.includes('complaint') ||
+                         normalizedMessage.includes('keluhan') ||
+                         normalizedMessage.includes('masalah') ||
+                         normalizedMessage.includes('infrastruktur') ||
+                         normalizedMessage.includes('fasilitas') ||
+                         normalizedMessage.includes('pelayanan') ||
+                         normalizedMessage.includes('layanan') ||
+                         normalizedMessage.includes('status') ||
+                         normalizedMessage.includes('prioritas') ||
+                         normalizedMessage.includes('lokasi') ||
+                         normalizedMessage.includes('wilayah') ||
+                         normalizedMessage.includes('daerah') ||
+                         normalizedMessage.includes('tingkatkan') ||
+                         normalizedMessage.includes('perbaiki') ||
+                         normalizedMessage.includes('solusi') ||
+                         normalizedMessage.includes('atasi') ||
+                         normalizedMessage.includes('tangani') ||
+                         normalizedMessage.includes('evaluasi') ||
+                         normalizedMessage.includes('monitoring') ||
+                         normalizedMessage.includes('pantau') ||
+                         normalizedMessage.includes('koordinasi') ||
+                         normalizedMessage.includes('implementasi') ||
+                         normalizedMessage.includes('alokasi') ||
+                         normalizedMessage.includes('sumber daya') ||
+                         normalizedMessage.includes('strategi') ||
+                         normalizedMessage.includes('kebijakan') ||
+                         normalizedMessage.includes('harus') ||
+                         normalizedMessage.includes('sebaiknya') ||
+                         normalizedMessage.includes('bisa') ||
+                         normalizedMessage.includes('bagaimana') ||
+                         normalizedMessage.includes('kenapa') ||
+                         normalizedMessage.includes('mengapa') ||
+                         normalizedMessage.includes('apa') ||
+                         normalizedMessage.includes('berapa') ||
+                         normalizedMessage.includes('dimana') ||
+                         normalizedMessage.includes('kapan') ||
+                         normalizedMessage.includes('siapa');
+    
+    // Determine if this needs complex analysis formatting
+    const needsComplexFormat = normalizedMessage.includes('analisis') || 
+                              normalizedMessage.includes('laporan') || 
+                              normalizedMessage.includes('rekomendasi') ||
+                              normalizedMessage.includes('detail') ||
+                              normalizedMessage.includes('strategi');
+
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
     
@@ -61,7 +166,7 @@ export async function generateRecommendations(history: ChatHistoryItem[], newMes
         temperature: 0.4,
         topK: 32,
         topP: 1,
-        maxOutputTokens: 8192,
+        maxOutputTokens: needsComplexFormat ? 2048 : 512, // Adaptive token limit
     };
 
     const safetySettings = [
@@ -72,57 +177,48 @@ export async function generateRecommendations(history: ChatHistoryItem[], newMes
     ];
     
     try {
-        const contextResult = await getComplaintContext();
-        if (!contextResult.success) {
-            return { success: false, report: contextResult.report };
+        console.log('🤖 [DEBUG] Starting AI processing...');
+        
+        // Only fetch complaint context for data-related questions
+        let contextResult = { success: true, report: '' };
+        if (isDataRelated) {
+            contextResult = await getComplaintContext();
+            if (!contextResult.success) {
+                console.log('🤖 [DEBUG] Context fetch failed:', contextResult.report);
+                return { success: false, report: contextResult.report };
+            }
+            console.log('🤖 [DEBUG] Context fetch successful, proceeding with AI...');
+        } else {
+            console.log('🤖 [DEBUG] Non-data question, skipping context fetch...');
         }
 
         const systemInstruction = `
             You are "PAWA Enhanced" (Pandawa AI Wisdom Advisor), an expert AI data analyst for the Government of DIY (Daerah Istimewa Yogyakarta).
 
+            CRITICAL RESPONSE GUIDELINES:
+            - BE ADAPTIVE: Match your response length and complexity to the user's question
+            - For simple questions → Give concise, direct answers (1-2 sentences)
+            - For complex analysis requests → Provide structured analysis
+            - Use professional Indonesian suitable for government context
+            - Include specific numbers only when relevant and requested
+            
             Your Persona:
-            - You are a sophisticated government data analyst, professional yet approachable
-            - You provide comprehensive, executive-level analysis with specific numbers and data points
-            - You think strategically about government operations and citizen services
+            - Professional government data analyst, approachable and helpful
+            - Provide insights based on actual data, not assumptions
+            - Think strategically about government operations and citizen services
 
-            Core Analytical Framework:
-            When analyzing complaints data, ALWAYS structure your response with these elements:
-
-            1. **Executive Summary**: Start with 2-3 sentences summarizing key findings with specific numbers (e.g., "Total 20 pengaduan aktif, dengan 15 kategori infrastruktur dominan")
-
-            2. **Data Breakdown**: Include specific category counts:
-               - Use exact numbers: "infrastruktur (15 kasus)", "kesehatan (4 kasus)", "transportasi (2 kasus)"
-               - Mention priority levels: "3 pengaduan prioritas tinggi memerlukan perhatian segera"
-               - Include geographic patterns if applicable
-
-            3. **Trend Analysis**: When relevant, mention patterns like:
-               - "Tren meningkat dalam kategori infrastruktur minggu ini"
-               - "Pola pengaduan menunjukkan konsentrasi di wilayah tertentu"
-               - Time-based patterns (daily, weekly trends)
-
-            4. **Strategic Recommendations**: Provide actionable insights:
-               - Specific department coordination (Dinas PU, Dinkes, Dishub)
-               - Resource allocation suggestions
-               - Priority escalation recommendations
-
-            5. **Alert Notifications**: Flag urgent issues:
-               - "Pengaduan prioritas tinggi memerlukan respons dalam 24 jam"
-               - System bottlenecks or recurring issues
-
-            Data Integration Rules:
-            - Always cite specific complaint IDs when relevant
-            - Use precise numbers and percentages
-            - Reference category names consistently (infrastruktur, kesehatan, transportasi, pendidikan)
-            - Include geographic context (latitude/longitude patterns if notable)
-
-            Response Format Guidelines:
-            - Start responses with concrete data points
-            - Use structured language that highlights key metrics
-            - Include actionable recommendations for government officials
-            - Reference inter-department coordination when appropriate
-            - Language: Professional Indonesian (Bahasa Indonesia) suitable for government reporting
-
-            Your responses will be enhanced with automatic data visualization, so include specific numbers and categories for optimal chart generation.
+            Response Rules:
+            ${needsComplexFormat ? `
+            For COMPLEX analysis, structure with:
+            1. **Ringkasan Eksekutif**: Key findings with numbers
+            2. **Analisis Data**: Relevant patterns and trends  
+            3. **Rekomendasi**: Actionable next steps
+            ` : `
+            For SIMPLE questions:
+            - Give direct, helpful answers
+            - Keep responses brief and focused
+            - Reference data when specifically relevant
+            `}
         `;
         
         
@@ -131,18 +227,23 @@ export async function generateRecommendations(history: ChatHistoryItem[], newMes
             safetySettings,
             history: [
                 { role: "user", parts: [{ text: systemInstruction }] },
-                { role: "model", parts: [{ text: "Siap melayani! Saya PAWA Enhanced, analyst data pemerintah DIY. Saya akan memberikan analisis comprehensive dengan visualisasi data, trend analysis, dan rekomendasi strategis berdasarkan data pengaduan real-time. Silakan ajukan pertanyaan analisis Anda." }] },
+                { role: "model", parts: [{ text: "Halo! Saya PAWA Enhanced, asisten analisis data Pemerintah DIY. Ada yang bisa saya bantu?" }] },
                 ...history
             ]
         });
 
-        
-        const fullPrompt = `
+        // Build context-aware prompt - always include data if question is data-related
+        const fullPrompt = isDataRelated ? `
             CONTEXT:
             ${contextResult.report}
 
             QUESTION:
             ${newMessage}
+        ` : `
+            QUESTION:
+            ${newMessage}
+            
+            NOTE: Keep response brief and direct for this simple question.
         `;
 
         const result = await chat.sendMessage(fullPrompt);

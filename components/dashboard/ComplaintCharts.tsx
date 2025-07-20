@@ -3,7 +3,6 @@
 
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MotionDiv } from '@/components/shared/MotionDiv';
 import { useTheme } from 'next-themes';
 import { ComplaintRow } from './ComplaintsTable';
 
@@ -29,52 +28,49 @@ export default function ComplaintChart({ complaints }: ComplaintChartProps) {
         .sort((a, b) => a.date.getTime() - b.date.getTime());
 
     return (
-        <MotionDiv
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-        >
-            <Card variant="glass">
+        <div className="opacity-100">
+            <Card className="premium-card">
                 <CardHeader>
-                    <CardTitle>Pengaduan 7 Hari Terakhir</CardTitle>
+                    <CardTitle className="sophisticated-text">Pengaduan 7 Hari Terakhir</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <ResponsiveContainer width="100%" height={200}>
                         <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                    <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.8}/>
+                                    <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0}/>
                                 </linearGradient>
                             </defs>
                             <XAxis
                                 dataKey="name"
-                                stroke={theme === 'dark' ? '#a1a1aa' : '#374151'}
+                                stroke="hsl(var(--muted-foreground))"
                                 fontSize={12}
                                 tickLine={false}
                                 axisLine={false}
                             />
                             <YAxis
-                                stroke={theme === 'dark' ? '#a1a1aa' : '#374151'}
+                                stroke="hsl(var(--muted-foreground))"
                                 fontSize={12}
                                 tickLine={false}
                                 axisLine={false}
                                 tickFormatter={(value) => `${value}`}
                             />
                             <Tooltip
-                                cursor={{ stroke: theme === 'dark' ? '#a1a1aa' : '#374151', strokeDasharray: '3 3' }}
+                                cursor={{ stroke: 'hsl(var(--border))', strokeDasharray: '3 3' }}
                                 contentStyle={{
-                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                    backdropFilter: 'blur(5px)',
-                                    border: '1px solid rgba(0, 0, 0, 0.1)',
+                                    backgroundColor: 'hsl(var(--background))',
+                                    backdropFilter: 'blur(8px)',
+                                    border: '1px solid hsl(var(--border))',
                                     borderRadius: '0.75rem',
+                                    color: 'hsl(var(--foreground))',
                                 }}
                             />
-                            <Area type="monotone" dataKey="total" stroke="#3b82f6" fillOpacity={1} fill="url(#colorTotal)" />
+                            <Area type="monotone" dataKey="total" stroke="hsl(var(--foreground))" fillOpacity={1} fill="url(#colorTotal)" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </CardContent>
             </Card>
-        </MotionDiv>
+        </div>
     );
 }

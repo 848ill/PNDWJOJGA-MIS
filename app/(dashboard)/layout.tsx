@@ -17,9 +17,11 @@ export default async function DashboardLayout({
         enableSystem
         disableTransitionOnChange
       >
-      <DashboardClientLayout user={user} userRole={userRole}>
-        {children}
-      </DashboardClientLayout>
+      <div className="h-full">
+        <DashboardClientLayout user={user} userRole={userRole}>
+          {children}
+        </DashboardClientLayout>
+      </div>
     </ThemeProvider>
   );
 }

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import { motion } from "framer-motion";
+
 import { cn } from "@/lib/utils";
 import {
   IconDashboard,
@@ -160,9 +160,9 @@ export default function ProfessionalSidebar({
   );
 
   return (
-    <div className="h-screen w-fit flex">
+    <div className="h-full w-fit flex">
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
+        <SidebarBody className="justify-between gap-10 h-full">
           <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
             {/* Logo Section */}
             {open ? <ExecutiveLogo /> : <ExecutiveLogoIcon />}
@@ -191,29 +191,20 @@ export default function ProfessionalSidebar({
               </div>
               
               {open && (
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="flex-1 min-w-0"
-                >
+                <div className="flex-1 min-w-0 animate-slide-in-left">
                   <div className="text-sm font-medium text-slate-800 truncate">
                     {userName}
                   </div>
                   <div className="text-xs text-slate-500 truncate">
                     {userEmail}
                   </div>
-                </motion.div>
+                </div>
               )}
             </div>
             
             {/* Role & Status Badge - Only show when expanded */}
             {open && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="px-3 py-2 space-y-2"
-              >
+              <div className="px-3 py-2 space-y-2 animate-slide-in-up delay-100">
                 {/* Role Badge */}
                 <div className="flex items-center justify-center">
                   <span className={cn(
@@ -230,21 +221,18 @@ export default function ProfessionalSidebar({
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-xs text-slate-600 font-medium">Sesi Aktif</span>
                 </div>
-              </motion.div>
+              </div>
             )}
             
             {/* Logout Button - Only show when expanded */}
             {open && (
-              <motion.button
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+              <button
                 onClick={onLogout}
-                className="w-full flex items-center gap-3 py-2 px-3 text-sm text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                className="w-full flex items-center gap-3 py-2 px-3 text-sm text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 animate-slide-in-up delay-200"
               >
                 <IconLogout className="h-4 w-4" />
                 <span>Keluar Sistem</span>
-              </motion.button>
+              </button>
             )}
             
             {/* Compact logout button when collapsed */}
@@ -267,34 +255,19 @@ export default function ProfessionalSidebar({
 // Executive Logo Component (Expanded)
 export const ExecutiveLogo = () => {
   return (
-    <motion.div 
-      className="relative z-20 flex items-center space-x-3 py-2"
-      whileHover={{ scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 400, damping: 10 }}
-    >
-      <motion.div 
-        className="w-8 h-8 bg-gradient-to-br from-slate-700 to-slate-900 rounded-lg flex items-center justify-center shadow-sm"
-        whileHover={{ 
-          boxShadow: "0 8px 25px -5px rgba(0, 0, 0, 0.2)",
-          rotateY: 10 
-        }}
-        transition={{ type: "spring", stiffness: 400, damping: 15 }}
-      >
+    <div className="relative z-20 flex items-center space-x-3 py-2 hover:scale-105 transition-transform duration-200">
+      <div className="w-8 h-8 bg-gradient-to-br from-slate-700 to-slate-900 rounded-lg flex items-center justify-center shadow-sm hover:shadow-lg transition-shadow duration-200">
         <span className="text-white font-bold text-sm">DIY</span>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="flex flex-col"
-      >
+      </div>
+      <div className="flex flex-col">
         <span className="font-bold text-slate-800 text-sm whitespace-pre">
           PANDAWA JOGJA
         </span>
         <span className="text-xs text-slate-500 -mt-0.5">
           Sistem Informasi Pengaduan
         </span>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 
@@ -302,17 +275,9 @@ export const ExecutiveLogo = () => {
 export const ExecutiveLogoIcon = () => {
   return (
     <div className="relative z-20 flex items-center justify-center py-2">
-      <motion.div 
-        className="w-8 h-8 bg-gradient-to-br from-slate-700 to-slate-900 rounded-lg flex items-center justify-center shadow-sm cursor-pointer"
-        whileHover={{ 
-          scale: 1.1,
-          boxShadow: "0 8px 25px -5px rgba(0, 0, 0, 0.2)",
-          rotateY: 15 
-        }}
-        transition={{ type: "spring", stiffness: 400, damping: 15 }}
-      >
+      <div className="w-8 h-8 bg-gradient-to-br from-slate-700 to-slate-900 rounded-lg flex items-center justify-center shadow-sm cursor-pointer hover:scale-110 hover:shadow-lg transition-all duration-200">
         <span className="text-white font-bold text-sm">DIY</span>
-      </motion.div>
+      </div>
     </div>
   );
 }; 
