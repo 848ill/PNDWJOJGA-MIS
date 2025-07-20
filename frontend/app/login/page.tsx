@@ -99,7 +99,11 @@ export default function LoginPage() {
                             {error && (
                                 <p className="text-red-600 text-sm text-center">{error}</p>
                             )}
-                            <Button type="submit" className="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 text-base rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-slate-900/20" disabled={loading}>
+                            <Button 
+                                type="submit" 
+                                className="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 text-base rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-slate-900/20" 
+                                disabled={loading}
+                            >
                                 {loading ? 'Sedang memproses...' : 'Masuk'}
                             </Button>
                         </form>
