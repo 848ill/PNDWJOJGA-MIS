@@ -53,9 +53,9 @@ export default function LandingPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/30 to-orange-50/20">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl border-b border-slate-200/50 z-50">
+              <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-amber-200/30 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <motion.div 
             className="flex items-center gap-3"
@@ -63,7 +63,7 @@ export default function LandingPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-700 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-amber-600 to-orange-700 rounded-lg flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-sm">BB</span>
             </div>
             <span className="font-bold text-xl text-slate-900">Bala Bantuan</span>
@@ -85,7 +85,7 @@ export default function LandingPage() {
             <Link href="#team" className="text-slate-600 hover:text-slate-900 transition-colors">
               Team
             </Link>
-            <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800">
+            <Button asChild className="bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-700 hover:to-orange-800 shadow-lg hover:shadow-xl transition-all duration-300">
               <Link href="/login">
                 Live Demo <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -104,24 +104,24 @@ export default function LandingPage() {
             animate="animate"
           >
             <motion.div variants={fadeInUp}>
-              <Badge variant="outline" className="mb-4 border-blue-200 text-blue-800 bg-blue-50">
-                🚀 Showcase Project: PNDW JOGJA MIS
+              <Badge variant="outline" className="mb-4 border-amber-300 text-amber-800 bg-amber-50/80 shadow-sm">
+                🏆 Showcase Project: PNDW JOGJA MIS
               </Badge>
               <h1 className="text-5xl md:text-7xl font-bold text-slate-900 leading-tight">
                 Government Systems
-                <span className="bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent block">
+                <span className="bg-gradient-to-r from-amber-600 to-orange-700 bg-clip-text text-transparent block">
                   Redefined
                 </span>
               </h1>
             </motion.div>
             
             <motion.p 
-              className="text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed"
+              className="text-xl md:text-2xl text-slate-700 max-w-4xl mx-auto leading-relaxed font-medium"
               variants={fadeInUp}
             >
-              Tim <strong>Bala Bantuan</strong> menghadirkan sistem informasi pemerintahan modern dengan 
-              <strong> AI Analytics</strong>, <strong>Real-time Mapping</strong>, dan 
-              <strong> Enterprise Architecture</strong> untuk transformasi digital yang sesungguhnya.
+              Tim <strong className="text-slate-900">Bala Bantuan</strong> menghadirkan sistem informasi pemerintahan modern dengan 
+              <strong className="text-amber-700"> AI Analytics</strong>, <strong className="text-amber-700">Real-time Mapping</strong>, dan 
+              <strong className="text-amber-700"> Enterprise Architecture</strong> untuk transformasi digital yang sesungguhnya.
             </motion.p>
 
             <motion.div 
@@ -130,7 +130,7 @@ export default function LandingPage() {
             >
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white px-8 py-4 text-lg"
+                className="bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-700 hover:to-orange-800 text-white px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
                 asChild
               >
                 <Link href="/login">
@@ -142,7 +142,7 @@ export default function LandingPage() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-slate-300 hover:bg-slate-50 px-8 py-4 text-lg"
+                className="border-amber-300 text-amber-800 hover:bg-amber-50 px-8 py-4 text-lg shadow-md hover:shadow-lg transition-all duration-300"
               >
                 <Award className="mr-2 h-5 w-5" />
                 View Case Study
@@ -171,7 +171,7 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white/50">
+      <section className="py-16 bg-white/70 shadow-inner">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div 
             className="grid grid-cols-2 md:grid-cols-4 gap-8"
@@ -181,20 +181,20 @@ export default function LandingPage() {
             transition={{ duration: 0.8 }}
           >
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">10+</div>
-              <div className="text-slate-600">Government Modules</div>
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-600 to-orange-700 bg-clip-text text-transparent mb-2">10+</div>
+              <div className="text-slate-700 font-medium">Government Modules</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">AI</div>
-              <div className="text-slate-600">Analytics Engine</div>
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-600 to-orange-700 bg-clip-text text-transparent mb-2">AI</div>
+              <div className="text-slate-700 font-medium">Analytics Engine</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">7</div>
-              <div className="text-slate-600">User Roles</div>
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-600 to-orange-700 bg-clip-text text-transparent mb-2">7</div>
+              <div className="text-slate-700 font-medium">User Roles</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">100%</div>
-              <div className="text-slate-600">TypeScript</div>
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-600 to-orange-700 bg-clip-text text-transparent mb-2">100%</div>
+              <div className="text-slate-700 font-medium">TypeScript</div>
             </div>
           </motion.div>
         </div>
@@ -209,7 +209,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <Badge variant="outline" className="mb-4 border-purple-200 text-purple-800 bg-purple-50">
+            <Badge variant="outline" className="mb-4 border-amber-300 text-amber-800 bg-amber-50/80 shadow-sm">
               Featured Project
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
@@ -228,9 +228,9 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="h-full bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200 hover:shadow-xl transition-all duration-300 group">
+              <Card className="h-full bg-gradient-to-br from-amber-50/50 to-orange-50/30 border-amber-200/50 hover:shadow-2xl transition-all duration-300 group backdrop-blur-sm">
                 <CardHeader>
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-700 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                     <Brain className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-xl font-bold text-slate-900">
@@ -266,9 +266,9 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="h-full bg-gradient-to-br from-purple-50 to-pink-100 border-purple-200 hover:shadow-xl transition-all duration-300 group">
+              <Card className="h-full bg-gradient-to-br from-orange-50/50 to-red-50/30 border-orange-200/50 hover:shadow-2xl transition-all duration-300 group backdrop-blur-sm">
                 <CardHeader>
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-700 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-red-700 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                     <BarChart3 className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-xl font-bold text-slate-900">
@@ -304,9 +304,9 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
             >
-              <Card className="h-full bg-gradient-to-br from-green-50 to-emerald-100 border-green-200 hover:shadow-xl transition-all duration-300 group">
+              <Card className="h-full bg-gradient-to-br from-yellow-50/50 to-amber-50/30 border-yellow-200/50 hover:shadow-2xl transition-all duration-300 group backdrop-blur-sm">
                 <CardHeader>
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-600 to-amber-700 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                     <Shield className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-xl font-bold text-slate-900">
@@ -339,7 +339,7 @@ export default function LandingPage() {
       </section>
 
       {/* Tech Stack */}
-      <section className="py-16 bg-slate-900 text-white">
+      <section className="py-16 bg-gradient-to-br from-slate-900 via-slate-800 to-stone-900 text-white shadow-2xl">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div 
             className="text-center mb-12"
@@ -363,24 +363,24 @@ export default function LandingPage() {
             transition={{ staggerChildren: 0.1 }}
           >
             <div className="text-center">
-              <Code2 className="h-8 w-8 mx-auto mb-3 text-blue-400" />
+              <Code2 className="h-8 w-8 mx-auto mb-3 text-amber-400" />
               <h3 className="font-semibold mb-2">Frontend</h3>
-              <p className="text-sm text-slate-400">Next.js 15, React 18, TypeScript</p>
+              <p className="text-sm text-stone-300">Next.js 15, React 18, TypeScript</p>
             </div>
             <div className="text-center">
-              <Database className="h-8 w-8 mx-auto mb-3 text-green-400" />
+              <Database className="h-8 w-8 mx-auto mb-3 text-orange-400" />
               <h3 className="font-semibold mb-2">Backend</h3>
-              <p className="text-sm text-slate-400">Supabase, PostgreSQL, Row Level Security</p>
+              <p className="text-sm text-stone-300">Supabase, PostgreSQL, Row Level Security</p>
             </div>
             <div className="text-center">
-              <Cpu className="h-8 w-8 mx-auto mb-3 text-purple-400" />
+              <Cpu className="h-8 w-8 mx-auto mb-3 text-yellow-400" />
               <h3 className="font-semibold mb-2">AI & Analytics</h3>
-              <p className="text-sm text-slate-400">Google Gemini, Recharts, Leaflet</p>
+              <p className="text-sm text-stone-300">Google Gemini, Recharts, Leaflet</p>
             </div>
             <div className="text-center">
-              <Palette className="h-8 w-8 mx-auto mb-3 text-pink-400" />
+              <Palette className="h-8 w-8 mx-auto mb-3 text-red-400" />
               <h3 className="font-semibold mb-2">UI/UX</h3>
-              <p className="text-sm text-slate-400">Tailwind CSS, shadcn/ui, Framer Motion</p>
+              <p className="text-sm text-stone-300">Tailwind CSS, shadcn/ui, Framer Motion</p>
             </div>
           </motion.div>
         </div>
@@ -407,14 +407,14 @@ export default function LandingPage() {
           </motion.div>
 
           <motion.div 
-            className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl p-8 md:p-12"
+            className="bg-gradient-to-br from-amber-50 to-orange-100 rounded-3xl p-8 md:p-12 shadow-xl"
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-orange-700 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Users className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-4">
@@ -427,31 +427,31 @@ export default function LandingPage() {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="text-center">
-                  <TrendingUp className="h-6 w-6 mx-auto mb-2 text-blue-600" />
+                  <TrendingUp className="h-6 w-6 mx-auto mb-2 text-amber-600" />
                   <h4 className="font-semibold text-slate-900">Performance Focus</h4>
-                  <p className="text-sm text-slate-600">Optimized for scale and speed</p>
+                  <p className="text-sm text-slate-700">Optimized for scale and speed</p>
                 </div>
                 <div className="text-center">
-                  <Shield className="h-6 w-6 mx-auto mb-2 text-blue-600" />
+                  <Shield className="h-6 w-6 mx-auto mb-2 text-orange-600" />
                   <h4 className="font-semibold text-slate-900">Security First</h4>
-                  <p className="text-sm text-slate-600">Enterprise-grade security</p>
+                  <p className="text-sm text-slate-700">Enterprise-grade security</p>
                 </div>
                 <div className="text-center">
-                  <Zap className="h-6 w-6 mx-auto mb-2 text-blue-600" />
+                  <Zap className="h-6 w-6 mx-auto mb-2 text-yellow-600" />
                   <h4 className="font-semibold text-slate-900">Modern Tech</h4>
-                  <p className="text-sm text-slate-600">Latest technology stack</p>
+                  <p className="text-sm text-slate-700">Latest technology stack</p>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800"
+                  className="bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-700 hover:to-orange-800 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
                 >
                   <Globe className="mr-2 h-5 w-5" />
                   Start Your Project
                 </Button>
-                <Button size="lg" variant="outline">
+                <Button size="lg" variant="outline" className="border-amber-300 text-amber-800 hover:bg-amber-50 shadow-md hover:shadow-lg transition-all duration-300">
                   <Star className="mr-2 h-5 w-5" />
                   View More Projects
                 </Button>
@@ -462,7 +462,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+      <section className="py-20 bg-gradient-to-br from-slate-900 via-stone-900 to-amber-900 text-white shadow-2xl">
         <div className="max-w-4xl mx-auto text-center px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -478,7 +478,7 @@ export default function LandingPage() {
             </p>
             <Button 
               size="lg" 
-              className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 text-lg"
+              className="bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900 hover:from-amber-300 hover:to-orange-400 px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105"
               asChild
             >
               <Link href="/login">
@@ -492,17 +492,17 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-slate-50 border-t border-slate-200">
+      <footer className="py-12 bg-gradient-to-r from-stone-50 to-amber-50 border-t border-amber-200/50 shadow-inner">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-3 mb-4 md:mb-0">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-700 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-amber-600 to-orange-700 rounded-lg flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-sm">BB</span>
               </div>
               <span className="font-bold text-xl text-slate-900">Bala Bantuan</span>
-              <Badge variant="secondary">Development Team</Badge>
+              <Badge variant="secondary" className="bg-amber-100 text-amber-800">Development Team</Badge>
             </div>
-            <div className="text-slate-600 text-sm">
+            <div className="text-slate-700 text-sm font-medium">
               © 2024 Tim Bala Bantuan. Showcase Project: PNDW JOGJA MIS
             </div>
           </div>
