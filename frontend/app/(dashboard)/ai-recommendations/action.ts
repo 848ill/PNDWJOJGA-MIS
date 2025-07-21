@@ -36,7 +36,7 @@ async function getComplaintContext() {
         firstComplaint: complaints?.[0] ? {
             id: complaints[0].id,
             status: complaints[0].status,
-            category: (complaints[0].categories as any)?.name
+            category: (complaints[0].categories as { name: string }[])?.[0]?.name
         } : null
     });
 

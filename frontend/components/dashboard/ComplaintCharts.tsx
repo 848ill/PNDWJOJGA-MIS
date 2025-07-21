@@ -3,7 +3,7 @@
 
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTheme } from 'next-themes';
+
 import { ComplaintRow } from './ComplaintsTable';
 
 interface ComplaintChartProps {
@@ -11,7 +11,6 @@ interface ComplaintChartProps {
 }
 
 export default function ComplaintChart({ complaints }: ComplaintChartProps) {
-    const { theme } = useTheme();
 
     const trendData = complaints.reduce((acc: { [key: string]: number }, complaint) => {
         const date = new Date(complaint.submitted_at).toLocaleDateString('en-CA'); // YYYY-MM-DD

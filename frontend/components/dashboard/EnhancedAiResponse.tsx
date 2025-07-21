@@ -366,10 +366,7 @@ export const EnhancedAiResponse: React.FC<EnhancedAiResponseProps> = ({ content,
     }
   };
 
-  const getAnalysisColor = (type: AiAnalysis['type']) => {
-    // Premium 3-tone system: all icons use same sophisticated color
-    return 'text-muted-foreground';
-  };
+
 
   const getBorderColor = (type: AiAnalysis['type']) => {
     // Clean minimal borders - no colors, just subtle differentiation

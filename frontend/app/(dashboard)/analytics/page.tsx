@@ -23,7 +23,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   BarChart,
   Bar,
@@ -50,11 +49,7 @@ interface SentimentData {
   value: number;
 }
 
-const COLORS = {
-  Positive: '#10b981', // Emerald 500
-  Negative: '#f43f5e', // Rose 500  
-  Neutral: '#f59e0b',  // Amber 500
-};
+
 
 const GRADIENT_COLORS = {
   Positive: ['#10b981', '#059669'], // Emerald gradient
@@ -63,25 +58,9 @@ const GRADIENT_COLORS = {
 };
 // ---------------------------------------------------------
 
-interface LegendPayload {
-  value: string;
-  color: string;
-}
 
-// Custom Legend Component
-const CustomLegend = ({ payload }: { payload?: LegendPayload[] }) => {
-  if (!payload) return null;
-  return (
-    <div className="flex justify-center space-x-4 mt-4">
-      {payload.map((entry, index) => (
-        <div key={`item-${index}`} className="flex items-center space-x-2 cursor-pointer">
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
-          <span className="text-xs text-gray-500">{entry.value}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
+
+
 
 // Skeleton Component for Analytics Page
 function AnalyticsSkeleton() {
@@ -122,7 +101,6 @@ export default function AnalyticsPage() {
   const [activeSlice, setActiveSlice] = useState<{ name: string; value: number; } | null>(null);
 
   const totalComplaintsInPeriod = trendData.reduce((sum, day) => sum + day.count, 0);
-  const averageComplaints = trendData.length > 0 ? totalComplaintsInPeriod / trendData.length : 0;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -437,47 +415,45 @@ export default function AnalyticsPage() {
                   </ResponsiveContainer>
                 </div>
 
-                {/* Premium Legend */}
-                <div className="grid grid-cols-1 gap-3 mt-6">
-                  {sentimentData.map((entry, index) => {
-                    const percentage = ((entry.value / totalComplaintsInPeriod) * 100).toFixed(1);
-                    const isActive = activeSlice?.name === entry.name;
-                    const emoji = entry.name === 'Positive' ? '😊' : entry.name === 'Negative' ? '😞' : '😐';
-                    
-                    return (
-                      <div 
-                        key={entry.name}
-                        className={`flex items-center justify-between p-4 rounded-xl transition-all duration-300 cursor-pointer ${
-                          isActive 
-                            ? 'bg-gradient-to-r from-slate-50 to-blue-50 border-2 border-blue-200 shadow-lg transform scale-105' 
-                            : 'bg-white/60 border border-slate-200/50 hover:bg-slate-50/80 hover:border-slate-300/50 hover:shadow-md'
-                        }`}
-                        onMouseEnter={() => setActiveSlice(entry)}
-                        onMouseLeave={() => setActiveSlice(null)}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className="flex items-center space-x-2">
-                            <div 
-                              className="w-4 h-4 rounded-full shadow-inner"
-                              style={{ 
-                                background: `linear-gradient(135deg, ${GRADIENT_COLORS[entry.name as keyof typeof GRADIENT_COLORS]?.[0] || '#8884d8'}, ${GRADIENT_COLORS[entry.name as keyof typeof GRADIENT_COLORS]?.[1] || '#8884d8'})`
-                              }}
-                            />
-                            <span className="text-xl">{emoji}</span>
-                          </div>
-                          <div>
-                            <div className="font-semibold text-slate-800">{entry.name}</div>
-                            <div className="text-xs text-slate-500">Sentimen pengaduan</div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold text-lg text-slate-800">{entry.value}</div>
-                          <div className="text-sm font-medium text-slate-600">{percentage}%</div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                                 {/* Premium Legend */}
+                 <div className="grid grid-cols-1 gap-3 mt-6">
+                   {sentimentData.map((entry) => {
+                     const percentage = ((entry.value / totalComplaintsInPeriod) * 100).toFixed(1);
+                     const isActive = activeSlice?.name === entry.name;
+                     
+                     return (
+                       <div 
+                         key={entry.name}
+                         className={`flex items-center justify-between p-4 rounded-xl transition-all duration-300 cursor-pointer ${
+                           isActive 
+                             ? 'bg-gradient-to-r from-slate-50 to-blue-50 border-2 border-blue-200 shadow-lg transform scale-105' 
+                             : 'bg-white/60 border border-slate-200/50 hover:bg-slate-50/80 hover:border-slate-300/50 hover:shadow-md'
+                         }`}
+                         onMouseEnter={() => setActiveSlice(entry)}
+                         onMouseLeave={() => setActiveSlice(null)}
+                       >
+                         <div className="flex items-center space-x-3">
+                           <div className="flex items-center space-x-3">
+                             <div 
+                               className="w-5 h-5 rounded-full shadow-inner border border-white/50"
+                               style={{ 
+                                 background: `linear-gradient(135deg, ${GRADIENT_COLORS[entry.name as keyof typeof GRADIENT_COLORS]?.[0] || '#8884d8'}, ${GRADIENT_COLORS[entry.name as keyof typeof GRADIENT_COLORS]?.[1] || '#8884d8'})`
+                               }}
+                             />
+                             <div>
+                               <div className="font-semibold text-slate-800">{entry.name}</div>
+                               <div className="text-xs text-slate-500">Sentimen pengaduan</div>
+                             </div>
+                           </div>
+                         </div>
+                         <div className="text-right">
+                           <div className="font-bold text-lg text-slate-800">{entry.value}</div>
+                           <div className="text-sm font-medium text-slate-600">{percentage}%</div>
+                         </div>
+                       </div>
+                     );
+                   })}
+                 </div>
               </div>
             ) : (
               <div className="h-[400px] w-full bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl border border-slate-200/50 flex items-center justify-center">

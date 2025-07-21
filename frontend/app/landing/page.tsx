@@ -1,15 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   ChevronRight, 
   Sparkles, 
-  BarChart3, 
-  MapPin, 
+  BarChart3,
   Users, 
   Shield, 
   Zap,
@@ -42,8 +41,6 @@ const staggerContainer = {
 };
 
 export default function LandingPage() {
-  const { scrollYProgress } = useScroll();
-  const yBg = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
