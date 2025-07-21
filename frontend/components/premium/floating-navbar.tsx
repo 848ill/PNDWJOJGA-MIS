@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import { cn } from "../../../backend/lib/utils";
+import { cn } from "@/lib/utils";
 
 export const FloatingNav = ({
   navItems,

@@ -58,7 +58,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   
   // Define public routes that don't require authentication
-  const publicRoutes = ['/login', '/api', '/_next', '/favicon.ico']
+  const publicRoutes = ['/login', '/landing', '/api', '/_next', '/favicon.ico']
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
   
   // Allow public routes
@@ -69,11 +69,20 @@ export async function middleware(request: NextRequest) {
   // Check authentication for protected routes
   const { data: { user }, error } = await supabase.auth.getUser()
 
-  // Redirect to login if not authenticated
-  if (error || !user) {
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('redirectTo', pathname)
-    return NextResponse.redirect(loginUrl)
+  // Special handling for root path - redirect to landing if not authenticated
+  if (pathname === '/') {
+    if (error || !user) {
+      const landingUrl = new URL('/landing', request.url)
+      return NextResponse.redirect(landingUrl)
+    }
+    // If authenticated, continue to dashboard (handled by route group)
+  } else {
+    // For other protected routes, redirect to login if not authenticated
+    if (error || !user) {
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('redirectTo', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
   }
 
   // Get user role for role-based access control

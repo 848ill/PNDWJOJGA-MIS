@@ -35,7 +35,7 @@ import { z } from 'zod';
 import { PlusCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { addUser } from './actions'; 
-import { Role } from '../../../backend/lib/types/common';
+import { Role } from '@/lib/types/common';
 
 const formSchema = z.object({
   fullName: z.string().min(3, { message: 'Nama lengkap minimal 3 karakter.' }),

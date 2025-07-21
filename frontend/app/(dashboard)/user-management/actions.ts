@@ -3,12 +3,12 @@
 
 import 'server-only';
 import { z } from 'zod';
-import { createAdminSupabaseClient } from '../../../backend/lib/supabase/admin';
+import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { revalidatePath } from 'next/cache';
-import { Role, UserRow } from '../../../backend/lib/types/common';
+import { Role, UserRow } from '@/lib/types/common';
 
 // Re-export types for components
-export type { UserRow } from '../../../backend/lib/types/common';
+export type { UserRow } from '@/lib/types/common';
 
 // Shared State type for form responses (from previous, for forms)
 export type State = {

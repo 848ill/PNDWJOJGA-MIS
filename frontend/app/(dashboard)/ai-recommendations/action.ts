@@ -2,7 +2,7 @@
 'use server';
 
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
-import { createAdminSupabaseClient } from '../../../backend/lib/supabase/admin';
+import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 
 
 interface ChatHistoryPart {

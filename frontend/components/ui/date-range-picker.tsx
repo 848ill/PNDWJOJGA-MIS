@@ -6,7 +6,7 @@ import { Calendar as CalendarIcon } from "lucide-react"
 import { type DateRange } from "react-day-picker"
 
 // FIX: Corrected all paths to be relative
-import { cn } from "../../lib/utils"
+import { cn } from "@/lib/utils"
 import { Button } from "./button"
 import { Calendar } from "./calendar"
 import {

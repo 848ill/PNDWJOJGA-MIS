@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { createAdminSupabaseClient } from '../../../backend/lib/supabase/admin';
+import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { Skeleton } from "@/components/ui/skeleton";
 
 // IMPORTANT: This page should only be accessible by 'system_admin' and 'it_support' roles.

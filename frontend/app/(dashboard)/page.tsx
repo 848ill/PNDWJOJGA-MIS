@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { createAdminSupabaseClient } from '../../../backend/lib/supabase/admin'; 
+import { createAdminSupabaseClient } from '@/lib/supabase/admin'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardSkeleton } from '@/components/ui/card';
 import ComplaintChart from '@/components/dashboard/ComplaintCharts';
 import { AiInsightsDisplay } from '@/components/dashboard/AiInsightsDisplay';

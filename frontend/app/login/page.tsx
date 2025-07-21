@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '../../../backend/lib/supabase/client'; // Client-side Supabase client
+import { createClient } from '@/lib/supabase/client'; // Client-side Supabase client
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

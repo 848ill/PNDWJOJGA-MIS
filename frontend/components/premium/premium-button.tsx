@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
-import { cn } from "../../../backend/lib/utils";
+import { cn } from "@/lib/utils";
 
 export const PremiumButton = ({
   children,
