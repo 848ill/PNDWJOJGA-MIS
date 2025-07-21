@@ -1,13 +1,25 @@
 {
-  "buildCommand": "npm run build",
-  "installCommand": "npm install --legacy-peer-deps",
-  "framework": "nextjs",
-  "regions": ["sin1"],
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "distDir": ".next"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ],
   "functions": {
-    "app/**/*.tsx": {
+    "frontend/app/**/*.tsx": {
       "maxDuration": 30
     },
-    "app/api/**/*.ts": {
+    "frontend/app/api/**/*.ts": {
       "maxDuration": 30
     }
   },

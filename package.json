@@ -8,10 +8,11 @@
     "start": "cd frontend && npm run start",
     "lint": "cd frontend && npm run lint",
     "frontend:install": "cd frontend && npm install",
-    "backend:install": "cd backend && npm install",
+    "backend:install": "cd backend && npm install", 
     "install:all": "npm run frontend:install && npm run backend:install",
     "backend:dev": "cd backend && npm run dev",
-    "backend:scripts": "cd backend && npm run list-users"
+    "backend:scripts": "cd backend && npm run list-users",
+    "vercel-build": "cd frontend && npm install --legacy-peer-deps && npm run build"
   },
   "dependencies": {},
   "devDependencies": {},
