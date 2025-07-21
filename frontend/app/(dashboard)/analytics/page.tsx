@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 // FIX: Corrected all relative paths to go up one more level
-import { createClient } from '../../../lib/supabase/client';
+import { createClient } from '../../../backend/lib/supabase/client';
 import {
   Card,
   CardContent,

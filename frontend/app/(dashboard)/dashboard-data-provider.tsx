@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server-session-client';
+import { createClient } from '../../../backend/lib/supabase/server-session-client';
 import { redirect } from 'next/navigation';
 
 export async function getDashboardData() {

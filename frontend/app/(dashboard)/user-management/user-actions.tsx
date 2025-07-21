@@ -29,7 +29,7 @@ import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { EditUserForm } from './edit-user-form';
 import { deleteUser } from './actions';
-import { UserRow, Role } from '@/lib/types/common';
+import { UserRow, Role } from '../../../backend/lib/types/common';
 
 interface UserActionsProps {
     user: UserRow,

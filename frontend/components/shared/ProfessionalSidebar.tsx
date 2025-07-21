@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 
-import { cn } from "@/lib/utils";
+import { cn } from "../../../backend/lib/utils";
 import {
   IconDashboard,
   IconFileText,

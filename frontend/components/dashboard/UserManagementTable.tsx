@@ -8,7 +8,7 @@ import {
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "@/app/(dashboard)/user-management/columns";
 import { UserActions } from '@/app/(dashboard)/user-management/user-actions';
-import { UserRow, Role } from "@/lib/types/common";
+import { UserRow, Role } from "../../../backend/lib/types/common";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 

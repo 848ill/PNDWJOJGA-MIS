@@ -1,6 +1,6 @@
 'use server';
 
-import { createAdminSupabaseClient } from '@/lib/supabase/admin';
+import { createAdminSupabaseClient } from '../../../backend/lib/supabase/admin';
 import { type ComplaintRow } from '@/components/dashboard/ComplaintsTable';
 import { revalidatePath } from 'next/cache';
 // import type { Database } from '@/lib/types/supabase';

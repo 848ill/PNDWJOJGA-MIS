@@ -8,7 +8,7 @@ import { generateRecommendations } from './action';
 import { Loader2, Send, Sparkles, Bot, User } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from '@/lib/utils';
+import { cn } from '../../../backend/lib/utils';
 import { MotionDiv } from '@/components/shared/MotionDiv';
 import { EnhancedAiResponse } from '@/components/dashboard/EnhancedAiResponse';
 

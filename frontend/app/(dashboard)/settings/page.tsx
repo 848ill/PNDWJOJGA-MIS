@@ -28,7 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { createAdminSupabaseClient } from '@/lib/supabase/admin';
+import { createAdminSupabaseClient } from '../../../backend/lib/supabase/admin';
 
 // IMPORTANT: This page should only be accessible by 'system_admin' role.
 

@@ -4,7 +4,7 @@
 import Header from '@/components/shared/Header';
 import ProfessionalSidebar from '@/components/shared/ProfessionalSidebar';
 import { User } from '@supabase/supabase-js';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '../../../backend/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
 interface DashboardClientLayoutProps {

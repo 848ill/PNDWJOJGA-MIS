@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn } from "../../../backend/lib/utils";
 
 export const PremiumLoader = ({ className, variant = "dots" }: { className?: string; variant?: "dots" | "pulse" | "orbit" | "wave" }) => {
   if (variant === "dots") {

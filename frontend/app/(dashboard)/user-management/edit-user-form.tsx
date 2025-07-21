@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { updateUser } from './actions';
-import { UserRow, Role } from '@/lib/types/common';
+import { UserRow, Role } from '../../../backend/lib/types/common';
 import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
